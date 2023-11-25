@@ -1,5 +1,6 @@
 #import sending_email
 import viewing_email
+import console
 
 def readFileConfig():
     fileConfig = "config.txt"
@@ -25,6 +26,15 @@ def readFileConfig():
 def main():
     username, email, password, host, SMTP, POP3, Autoload = readFileConfig()
     #print(username, email, password, host, SMTP, POP3, Autoload)
+
+    choice = console.printClientConsole()
+
+    if choice == 1:
+        console.printSendingEmail()
+    elif choice == 2:
+        console.printReceivedEmailList()
+    else:
+        pass
 
 if __name__ == "__main__":
     main()
