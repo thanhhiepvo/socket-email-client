@@ -52,7 +52,7 @@ def begin_sending_mail(client_socket, sender_email, receiver_emails):
 
 def end_sending_mail(client_socket, boundary=None):
     if boundary:
-        send_line(client_socket, boundary + "--")
+        send_line(client_socket, "--" + boundary + "--")
     send_command(client_socket, ".", 250)
 
 
@@ -76,9 +76,7 @@ def get_current_time():
 
 
 def generate_boundary():
-    prefix = "------------"
-    random_string = "".join(random.choices(string.ascii_letters + string.digits, k=24))
-    boundary = prefix + random_string
+    boundary = "".join(random.choices(string.ascii_letters + string.digits, k=24))
     return boundary
 
 
@@ -130,7 +128,7 @@ def get_content_type(file_path):
 
 
 def generate_mime_part_header(boundary, file_path=None):
-    mime_part_header = boundary + CRLF
+    mime_part_header = "--" + boundary + CRLF
     mime_part_header += "Content-Type: "
     if file_path:
         mime_part_header += get_content_type(file_path)
@@ -153,12 +151,12 @@ def generate_general_header(
     general_header = ""
     if attached:
         boundary = generate_boundary()
-        general_header += f'Content_Type: multipart/mixed; boundary="{boundary}"'
+        general_header += f"Content-Type: multipart/mixed; boundary={boundary}"
         general_header += CRLF
     general_header += f"Message-ID: {generate_message_id()}" + CRLF
     general_header += f"Date: {get_current_time()}" + CRLF
     general_header += "MIME-Version: 1.0" + CRLF
-    general_header += "Content-Language: vi-VN" + CRLF
+    general_header += "Content-Language: en-US" + CRLF
     general_header += f"From: {sender_name} <{sender_email}>" + CRLF
     general_header += f"To: {generate_email_sequence(to_emails)}" + CRLF
     if len(cc_emails) > 0:
@@ -168,6 +166,10 @@ def generate_general_header(
         return general_header, boundary
     else:
         return general_header
+
+
+def check_file_size(file_path):
+    return os.path.getsize(file_path) <= 3 * 1024 * 1024
 
 
 def get_file_data(file_path):
@@ -202,8 +204,11 @@ def send_email(
         send_line(client_socket, generate_mime_part_header(boundary))
         send_line(client_socket, message + CRLF)
         for file_path in attachment_paths:
-            send_line(client_socket, generate_mime_part_header(boundary, file_path))
-            send_line(client_socket, get_file_data(file_path))
+            if check_file_size(file_path):
+                send_line(client_socket, generate_mime_part_header(boundary, file_path))
+                send_line(client_socket, get_file_data(file_path))
+            else:
+                raise Error("File đính kèm không hợp lệ do nặng hơn 3MB!!")
         end_sending_mail(client_socket, boundary)
     else:
         send_line(
@@ -232,6 +237,8 @@ if __name__ == "__main__":
             "Test Message, đây là dữ liệu mẫu",
             [
                 "D:\STUDYING\MY CLASSROOM\CSC10008_22CLC04 - Computer Networking\Socket project\Cho-Miniature-Poodle-5.jpg",
+                "D:\STUDYING\MY CLASSROOM\CSC10008_22CLC04 - Computer Networking\Socket project\Local\\test.txt",
+                "D:\STUDYING\MY CLASSROOM\CSC10008_22CLC04 - Computer Networking\Socket project\Local\wallpaperflare.com_wallpaper.jpg",
             ],
         )
         close_connection(client_socket)
