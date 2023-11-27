@@ -1,21 +1,20 @@
 import base64
 import socket
 import os
-import random
-import string
 from datetime import datetime, timedelta
 import pytz
 import uuid
 
 CRLF = "\r\n"
 buff_size = 1024
+boundary = "boundary"
 
 
 class Error(Exception):
     pass
 
 
-def send_line(client_socket, message):
+def send_line(client_socket, message=None):
     client_socket.send((message + CRLF).encode())
 
 
@@ -73,11 +72,6 @@ def get_current_time():
     time_in_gmt_plus_7 = gmt_plus_7.localize(time_in_gmt_plus_7)
     formatted_time = time_in_gmt_plus_7.strftime("%a, %d %b %Y %H:%M:%S %z")
     return formatted_time
-
-
-def generate_boundary():
-    boundary = "".join(random.choices(string.ascii_letters + string.digits, k=24))
-    return boundary
 
 
 def generate_email_sequence(emails):
@@ -150,7 +144,6 @@ def generate_general_header(
 ):
     general_header = ""
     if attached:
-        boundary = generate_boundary()
         general_header += f"Content-Type: multipart/mixed; boundary={boundary}"
         general_header += CRLF
     general_header += f"Message-ID: {generate_message_id()}" + CRLF
@@ -162,10 +155,7 @@ def generate_general_header(
     if len(cc_emails) > 0:
         general_header += f"Cc: {generate_email_sequence(cc_emails)}" + CRLF
     general_header += f"Subject: {subject}" + CRLF
-    if attached:
-        return general_header, boundary
-    else:
-        return general_header
+    return general_header
 
 
 def check_file_size(file_path):
@@ -197,7 +187,7 @@ def send_email(
     receiver_emails = to_emails + cc_emails + bcc_emails
     begin_sending_mail(client_socket, sender_email, receiver_emails)
     if attachment_paths:
-        general_header, boundary = generate_general_header(
+        general_header = generate_general_header(
             sender_name, sender_email, to_emails, cc_emails, subject, True
         )
         send_line(client_socket, general_header)
@@ -208,7 +198,9 @@ def send_email(
                 send_line(client_socket, generate_mime_part_header(boundary, file_path))
                 send_line(client_socket, get_file_data(file_path))
             else:
-                raise Error("File đính kèm không hợp lệ do nặng hơn 3MB!!")
+                print(
+                    f"{get_file_name(file_path)} có dung lượng lớn hơn 3MB nên sẽ không được gửi đi!!"
+                )
         end_sending_mail(client_socket, boundary)
     else:
         send_line(
@@ -234,11 +226,12 @@ if __name__ == "__main__":
             ["lhbdat22@clc.fitus.edu.vn", "testcc2@email.com"],
             ["testbcc@email.com", "testbcc2@email.com"],
             "Test subject",
-            "Test Message, đây là dữ liệu mẫu",
+            "Test Message",
             [
-                "D:\STUDYING\MY CLASSROOM\CSC10008_22CLC04 - Computer Networking\Socket project\Cho-Miniature-Poodle-5.jpg",
+                "D:\STUDYING\MY CLASSROOM\CSC10008_22CLC04 - Computer Networking\Socket project\Local\Cho-Miniature-Poodle-5.jpg",
                 "D:\STUDYING\MY CLASSROOM\CSC10008_22CLC04 - Computer Networking\Socket project\Local\\test.txt",
                 "D:\STUDYING\MY CLASSROOM\CSC10008_22CLC04 - Computer Networking\Socket project\Local\wallpaperflare.com_wallpaper.jpg",
+                "D:\STUDYING\AIO2023\Main Curriculum\Module 2\Week 5 - Linear Algebra and Its Application\Lessons\\230628 - M02ML09 - Basic Linear Algebra and its Applications\\230628 - M02ML09 - Record.mp4",
             ],
         )
         close_connection(client_socket)
