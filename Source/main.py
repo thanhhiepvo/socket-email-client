@@ -1,5 +1,5 @@
-#import sending_email
-import viewing_email
+import sending_email
+import getting_email
 import console
 
 def readFileConfig():
@@ -19,18 +19,34 @@ def readFileConfig():
         Autoload = lines[6].split(': ')[1]
 
         file.close()
+    
+    buffer = dict()
+    buffer['username'] = username
+    buffer['email'] = email
+    buffer['password'] = password
+    buffer['host'] = host
+    buffer['SMTP'] = int(SMTP)
+    buffer['POP3'] = int(POP3)
+    buffer['Autoload'] = int(Autoload)
 
-    return username, email, password, host, SMTP, POP3, Autoload
+    #return username, email, password, host, int(SMTP), int(POP3), int(Autoload)
+    return buffer
 
 # Print Mail Client on Console
 def main():
-    username, email, password, host, SMTP, POP3, Autoload = readFileConfig()
-    #print(username, email, password, host, SMTP, POP3, Autoload)
+    #username, email, password, host, SMTP, POP3, Autoload = readFileConfig()
+    buffer_config = readFileConfig()
+    print(buffer_config)
+
+    getting_email.call_getting_email(buffer_config)
 
     choice = console.printClientConsole()
 
-    if choice == 1:
-        console.printSendingEmail()
+    if choice == 1: # Using for sending Email
+        buffer_sending = console.printSendingEmail()
+        print(buffer_sending)
+        sending_email.call_sending_email(buffer_config, buffer_sending)
+
     elif choice == 2:
         console.printReceivedEmailList()
     else:
