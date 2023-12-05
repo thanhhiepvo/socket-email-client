@@ -149,6 +149,27 @@ class EmailReader:
                 print(f"{number}.{is_read} {email[0]} {email[1]}")
                 number += 1
 
+def call_getting_email(buffer_config):
+    # Replace these values with your actual configurations
+    email_config = ClientConfig(
+        mailserver = buffer_config['host'],
+        pop3 = buffer_config['POP3'],
+        email = buffer_config['email'],
+        filters = [EmailFilter("Folder1", ["flag1", "flag2"]), EmailFilter("Folder2", ["flag3"])]
+    )
+
+    # Example usage of EmailDownloader
+    downloader = EmailDownloader(email_config)
+    downloader.download_emails()
+
+    # Example usage of EmailReader
+    reader = EmailReader(email_config)
+    reader.print_list()
+
+    email_number = int(input("Enter the email number you want to read: "))
+    reader.read_email(email_number)
+
+"""
 def main():
     # Replace these values with your actual configurations
     email_config = ClientConfig(
@@ -171,3 +192,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+"""
