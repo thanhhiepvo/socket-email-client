@@ -152,9 +152,9 @@ class EmailReader:
 def call_getting_email(buffer_config):
     # Replace these values with your actual configurations
     email_config = ClientConfig(
-        mailserver = buffer_config['host'],
+        mailserver = buffer_config['MailServer'],
         pop3 = buffer_config['POP3'],
-        email = buffer_config['email'],
+        email = buffer_config['Email'],
         filters = [EmailFilter("Folder1", ["flag1", "flag2"]), EmailFilter("Folder2", ["flag3"])]
     )
 

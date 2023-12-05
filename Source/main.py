@@ -1,42 +1,13 @@
 import sending_email
 import getting_email
 import console
-
-def readFileConfig():
-    fileConfig = "config.txt"
-
-    username, email, password, host, SMTP, POP3, Autoload = "", "", "", "", "", "", ""
-    with open(fileConfig, "r") as file:
-        lines = file.read()
-        lines = lines.split('\n') # convert to list
-        
-        username = lines[1].split(': ')[1].split('<')[0].strip()
-        email = lines[1].split('<')[1].split('>')[0]
-        password = lines[2].split(': ')[1]
-        host = lines[3].split(': ')[1]
-        SMTP = lines[4].split(': ')[1]
-        POP3 = lines[5].split(': ')[1]
-        Autoload = lines[6].split(': ')[1]
-
-        file.close()
-    
-    buffer = dict()
-    buffer['username'] = username
-    buffer['email'] = email
-    buffer['password'] = password
-    buffer['host'] = host
-    buffer['SMTP'] = int(SMTP)
-    buffer['POP3'] = int(POP3)
-    buffer['Autoload'] = int(Autoload)
-
-    #return username, email, password, host, int(SMTP), int(POP3), int(Autoload)
-    return buffer
+import setting
 
 # Print Mail Client on Console
 def main():
-    #username, email, password, host, SMTP, POP3, Autoload = readFileConfig()
-    buffer_config = readFileConfig()
-    print(buffer_config)
+    setting.create_or_check_config_file()
+    buffer_config = setting.readConfig()
+    #print(buffer_config)
 
     getting_email.call_getting_email(buffer_config)
 
@@ -49,6 +20,9 @@ def main():
 
     elif choice == 2:
         console.printReceivedEmailList()
+
+    elif choice == 3:
+        setting.setting()
     else:
         pass
 

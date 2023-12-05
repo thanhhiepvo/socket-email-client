@@ -2,9 +2,11 @@ def printClientConsole():
     print("Vui lòng chọn Menu")
     print("1. Để gửi email")
     print("2. Để xem danh sách các email đã nhận")
-    print("3. Thoát")
+    print("3. Setting")
+    print("4. Thoát")
+
     choice = int(input("Bạn chọn:"))
-    while choice not in [1, 2, 3]:
+    while choice not in range(1, 5):
         choice = int(input("Chọn lại:"))
 
     return choice
