@@ -1,8 +1,7 @@
 import base64
 import socket
 import os
-from datetime import datetime, timedelta
-import pytz
+from datetime import datetime
 import uuid
 
 
@@ -69,7 +68,6 @@ def generate_message_id():
 def get_current_time():
     current_time = datetime.now()
     formatted_time = current_time.strftime("%a, %d %b %Y %H:%M:%S +0700")
-    print(formatted_time)
     return formatted_time
 
 
@@ -225,7 +223,7 @@ if __name__ == "__main__":
             ["lhbdat22@clc.fitus.edu.vn", "testcc2@email.com"],
             ["testbcc@email.com", "testbcc2@email.com"],
             "Test subject",
-            "Test Message",
+            "Kiểm thử thôi á bro",
             [
                 "D:\STUDYING\MY CLASSROOM\CSC10008_22CLC04 - Computer Networking\Socket project\Local\Cho-Miniature-Poodle-5.jpg",
                 "D:\STUDYING\MY CLASSROOM\CSC10008_22CLC04 - Computer Networking\Socket project\Local\\test.txt",
