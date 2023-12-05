@@ -67,11 +67,9 @@ def generate_message_id():
 
 
 def get_current_time():
-    utc_time = datetime.utcnow()
-    gmt_plus_7 = pytz.timezone("Asia/Bangkok")
-    time_in_gmt_plus_7 = utc_time + timedelta(hours=7)
-    time_in_gmt_plus_7 = gmt_plus_7.localize(time_in_gmt_plus_7)
-    formatted_time = time_in_gmt_plus_7.strftime("%a, %d %b %Y %H:%M:%S %z")
+    current_time = datetime.now()
+    formatted_time = current_time.strftime("%a, %d %b %Y %H:%M:%S +0700")
+    print(formatted_time)
     return formatted_time
 
 
