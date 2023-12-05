@@ -209,26 +209,6 @@ def send_email(
         send_line(client_socket, message)
         end_sending_mail(client_socket)
 
-def call_sending_email(buffer_config, buffer_sending):
-    try:
-        client_socket = create_socket()
-        #connect_server(client_socket, "127.0.0.1", 2225)
-        connect_server(client_socket, buffer_config['host'], buffer_config['SMTP'])
-        greet_server(client_socket)
-        send_email(
-            client_socket,
-            buffer_config['username'],
-            buffer_config['email'],
-            buffer_sending['To'],
-            buffer_sending['CC'],
-            buffer_sending['BCC'],
-            buffer_sending['subject'],
-            buffer_sending['content'],
-            buffer_sending['filePaths'],
-        )
-        close_connection(client_socket)
-    except Error as error:
-        print("Lỗi: ", error)
 
 """
 if __name__ == "__main__":
@@ -256,4 +236,3 @@ if __name__ == "__main__":
     except Error as error:
         print("Lỗi: ", error)
 """
-
