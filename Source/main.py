@@ -1,3 +1,6 @@
+import sys
+sys.dont_write_bytecode = True
+
 import sending_email
 import getting_email
 import console

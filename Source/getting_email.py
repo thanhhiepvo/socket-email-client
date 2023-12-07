@@ -85,7 +85,6 @@ class EmailReader:
 
                 response_retr = ""
                 while True:
-
                     data = mail_socket.recv(1024).decode()
 
                     if not data:
@@ -104,7 +103,7 @@ class EmailReader:
                 response_retr = response_retr.removesuffix('\r\n.\r\n')
                 
                 # Xuất ra màn hình nội dung mail vừa lấy
-                print(f"Nội dung email:\n{response_retr}")
+                #print(f"Nội dung email:\n{response_retr}")
 
                 # Lưu file đính kèm nếu có
                 if "Content-Disposition: attachment" in response_retr:
@@ -122,10 +121,12 @@ class EmailReader:
     def save_attachment(self, attachment, email_number):
 
         def getFileName(attachment_header):
-            index = attachment_header.find("name=") + 5
+            index = attachment_header.find("name=") + 6
             file_name = attachment_header[index:]
             end_index = file_name.find("\r\n")
-            return file_name[:end_index]
+            file_name = file_name[:end_index - 1]
+
+            return file_name
         
         def getEncoding(attachmen_header):
             index = attachmen_header.find("Content-Transfer-Encoding: ") + len("Content-Transfer-Encoding: ")
@@ -143,12 +144,20 @@ class EmailReader:
 
         decode_data = base64.b64decode(attachment_data)
 
-        with open("image.jpg", "wb") as image_file:
-            image_file.write(decode_data)
+        attachment_directory = "./Mailbox/" + self.client_config.email + "/Inbox/" + str(email_number) + "/"
+        if not os.path.exists(attachment_directory):
+            os.makedirs(attachment_directory)
 
-        email_message = BytesParser(policy=policy.default).parsebytes(email_content.encode())
-        content_type = email_message.get_content_type()
+        attachment_file_path = attachment_directory + file_name
 
+        with open(attachment_file_path, "wb") as file:
+            file.write(decode_data)
+
+        #email_message = BytesParser(policy=policy.default).parsebytes(email_content.encode())
+        #content_type = attachment_header.get_content_type()
+        #printToTest.printToTest(content_type)
+
+        """
         content_disposition, params = email_message.get_content_disposition(), email_message.get_params()
 
         if params:
@@ -166,6 +175,7 @@ class EmailReader:
 
         with open(attachment_file_path, "wb") as attachment_file:
             attachment_file.write(attachment_data)
+        """
 
         print(f"Đã lưu file đính kèm của Email {email_number} vào đường dẫn: {attachment_file_path}")
 
@@ -219,9 +229,11 @@ def call_getting_email(buffer_config):
     downloader = EmailDownloader(email_config)
     downloader.download_emails()
 
+    #print("finish email download")
+
     # Example usage of EmailReader
     reader = EmailReader(email_config)
-    reader.print_list()
+    #reader.print_list()
 
     email_number = int(input("Enter the email number you want to read: "))
     reader.read_email(email_number)
