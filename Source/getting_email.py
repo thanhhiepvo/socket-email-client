@@ -9,6 +9,11 @@ from download_email import ClientConfig
 from download_email import EmailFilter
 from download_email import EmailDownloader
 
+import printToTest
+import appendToTest
+
+import base64
+
 class EmailReader:
     def __init__(self, client_config):
         self.client_config = client_config
@@ -44,7 +49,34 @@ class EmailReader:
             # Gửi lệnh USER
             mail_socket.send(f"USER {self.client_config.email}\r\n".encode())
             response_user = mail_socket.recv(1024).decode()
-            # print(response_user)
+
+            def receiveRes_Retr(mail_socket):
+                # receive each line
+                def receiveEachLine(mail_socket):
+                    data = b""
+                    while b"\r\n" not in data:
+                        data = mail_socket.recv(1)
+                    data = data.decode()
+                    return data
+                
+                def passThroughEndLine(mail_socket):
+                    data = b""
+                    while b"\r\n" not in data:
+                        data += mail_socket.recv(1)
+                
+                response_retr = ""
+                while True:
+                    data = receiveEachLine(mail_socket)
+                    response_retr += data
+                    passThroughEndLine(mail_socket)
+
+                    if not data:
+                        break
+
+                    if data.endswith('\r\n.\r\n'):
+                        break
+                
+                return response_retr
 
             # Nếu server trả lời "+OK"
             if response_user.startswith('+OK'):
@@ -53,6 +85,7 @@ class EmailReader:
 
                 response_retr = ""
                 while True:
+
                     data = mail_socket.recv(1024).decode()
 
                     if not data:
@@ -75,8 +108,9 @@ class EmailReader:
 
                 # Lưu file đính kèm nếu có
                 if "Content-Disposition: attachment" in response_retr:
-                    attachment_start = response_retr.find("Content-Disposition: attachment")
-                    self.save_attachment(response_retr, attachment_start, email_number)
+                    file_start = response_retr.rfind("Content-Type:")
+                    attachment = response_retr[file_start:]
+                    self.save_attachment(attachment, email_number)
             else:
                 print("Đăng nhập thất bại. Hãy kiểm tra lại.")
         except Exception as e:
@@ -85,9 +119,32 @@ class EmailReader:
             # Đóng socket sau khi hoàn thành
             mail_socket.close()
 
-    def save_attachment(self, email_content, attachment_start, email_number):
-        attachment_end = email_content.find("\r\n\r\n", attachment_start)
-        attachment_data = email_content[attachment_end:].encode()
+    def save_attachment(self, attachment, email_number):
+
+        def getFileName(attachment_header):
+            index = attachment_header.find("name=") + 5
+            file_name = attachment_header[index:]
+            end_index = file_name.find("\r\n")
+            return file_name[:end_index]
+        
+        def getEncoding(attachmen_header):
+            index = attachmen_header.find("Content-Transfer-Encoding: ") + len("Content-Transfer-Encoding: ")
+            encoding = attachmen_header[index:]
+            return encoding
+
+        attachment_end = attachment.find("\r\n\r\n")
+        attachment_header = attachment[:attachment_end]
+        
+        file_name = getFileName(attachment_header)
+        encoding = getEncoding(attachment_header)
+
+        attachment_data = attachment[attachment_end:]
+        attachment_data = attachment_data.replace("\r\n", "")
+
+        decode_data = base64.b64decode(attachment_data)
+
+        with open("image.jpg", "wb") as image_file:
+            image_file.write(decode_data)
 
         email_message = BytesParser(policy=policy.default).parsebytes(email_content.encode())
         content_type = email_message.get_content_type()
