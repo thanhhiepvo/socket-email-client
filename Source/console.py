@@ -117,7 +117,6 @@ def print_emails_in_box(box_data, email, choice_Mailbox):
             else:
                 filter_based['content'] = True
             
-            
     #nLetters = len(box_data)
     reading_email.print_mails_into_console(box_data)
 
@@ -128,10 +127,7 @@ def print_emails_in_box(box_data, email, choice_Mailbox):
     filter_based['content'] = False
     filter_based = getTheDemandOnFilter(filter_based)
 
-    if filter_based['sender_email']:
-        filter_data = fill_emails_based_sender_email(box_data)
-    if filter_based['subject']:
-        filter_data = fill_emails_based_subject(filter_data)
+    filter_data = fillMails(box_data, filter_based)
     
     nLetters = len(filter_data)
 
@@ -139,13 +135,29 @@ def print_emails_in_box(box_data, email, choice_Mailbox):
         if nLetters == 0:
             print("Không có email nào")
         else:
+            print("0. Kích hoạt tính năng chuyển mail sang thư mục khác")
             reading_email.print_mails_into_console(filter_data)
         print(nLetters + 1, "EXIT")
 
-        choice_file = getChoiceNumber(1, nLetters + 1)
+        choice_file = getChoiceNumber(0, nLetters + 1)
 
         if choice_file == nLetters + 1:
             break
+
+        if choice_file == 0:
+            moved_file = getTheMovedFile(filter_data, nLetters)
+
+            if moved_file == None:
+                continue
+            
+            the_mail = filter_data[moved_file - 1]
+            des_box = choice_destinate_folder(the_mail)
+
+            filter_data.remove(the_mail)
+            nLetters -= 1
+            
+            reading_email.moveFile(email, the_mail, des_box)
+            continue
 
         print()
         print("The content in this mail:")
@@ -153,6 +165,37 @@ def print_emails_in_box(box_data, email, choice_Mailbox):
 
         reading_email.markFileWasRead(email, box_data[choice_file - 1]['subject'])
         input("Press Enter to continue...")
+
+def choice_destinate_folder(the_mail):
+    sub_box = ['Inbox', 'Project', 'Important', 'Work', 'Spam']
+    source_folder = the_mail['box']
+
+    sub_box.remove(source_folder)
+    print(sub_box)
+    count = 1
+    for item in sub_box:
+        print(count, ".", item)
+        count += 1
+    print("Choice the destination folder: ", end="")
+    choice_number = getChoiceNumber(1, 5)
+    return sub_box[choice_number - 1]
+
+def fillMails(filter_data, filter_based):
+    if filter_based['sender_email']:
+        filter_data = fill_emails_based_sender_email(filter_data)
+    if filter_based['subject']:
+        filter_data = fill_emails_based_subject(filter_data)
+
+    return filter_data
+
+def getTheMovedFile(filter_data, nLetters):
+    reading_email.print_mails_into_console(filter_data)
+    print("Choose the file you want to move: ", end="")
+    choice_number = getChoiceNumber(1, nLetters + 1)
+
+    if choice_number == nLetters:
+        return None
+    return choice_number
 
 def fill_emails_based_subject(data):
     anything = str(input("Enter the thing you want to fill the subject: "))

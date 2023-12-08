@@ -10,9 +10,6 @@ from download_email import ClientConfig
 from download_email import EmailFilter
 from download_email import EmailDownloader
 
-import printToTest
-import appendToTest
-
 import base64
 
 class EmailReader:

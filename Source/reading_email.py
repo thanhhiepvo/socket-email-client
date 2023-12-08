@@ -1,14 +1,26 @@
 import json
+import os
+import shutil
+import glob
 
 def read_manage_json(email):
     file_path = "./Mailbox/" + email + "/manage.json"
 
     with open(file_path, 'r') as file:
-        config_data = json.load(file)
+        manage_data = json.load(file)
 
-    data = config_data['emails']
+    data = manage_data['emails']
     
     return data
+
+def write_manage_json(email, data):
+    file_path = "./Mailbox/" + email + "/manage.json"
+    json_data = {
+        "emails": data
+    }
+
+    with open(file_path, 'w') as file:
+        json.dump(json_data, file, indent=4)
 
 def get_mail_in_box(data, box):
     box_data = []
@@ -55,3 +67,57 @@ def markFileWasRead(email, subject):
     
     with open(file_path, "w") as file:
         json.dump(json_data, file, indent=4)
+
+def moveFile(email, the_email, des_box):
+
+    def get_file_name_in_folder(folder_path):
+        files = glob.glob(os.path.join(folder_path, '*'))
+        files = [f for f in files if os.path.isfile(f)]
+        file = files[0]
+        file = file[file.rfind('\\') + 1:]
+        return file
+
+    data = read_manage_json(email)
+    index = data.index(the_email)
+
+    source_folder = "./Mailbox/" + email + '/' + the_email['box'] + '/'
+    des_folder = "./Mailbox/" + email + '/' + des_box + '/'
+
+    if not os.path.exists(des_folder):
+        os.makedirs(des_folder)
+
+    file_name = the_email['subject'] + '.msg'
+
+    src_path = os.path.join(source_folder, file_name)
+    des_path = os.path.join(des_folder, file_name)
+
+    print("src path:", src_path)
+    print("des path:", des_path)
+
+    try:
+        shutil.move(src_path, des_path)
+    except Exception as e:
+        print(f"An error occurred: {e}")
+
+    if the_email['attachment'] == True:
+        source_folder += the_email['subject'] + '/'
+        des_folder +=  '/' + the_email['subject'] + '/'
+
+        if not os.path.exists(des_box):
+            os.makedirs(des_folder)
+
+        file_name = get_file_name_in_folder(source_folder)
+
+        src_path = os.path.join(source_folder, file_name)
+        des_path = os.path.join(des_folder, file_name)
+
+        try:
+            shutil.move(src_path, des_path)
+        except Exception as e:
+            print(f"An error occurred: {e}")
+
+        #os.rmdir(src_path)
+        os.rmdir(source_folder)
+
+    data[index]['box'] = des_box
+    write_manage_json(email, data)

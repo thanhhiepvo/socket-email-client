@@ -3,8 +3,6 @@ import socket
 import logging
 import json
 
-import printToTest
-
 class ClientConfig:
     def __init__(self, email, mailserver, pop3, filters):
         self.email = email
