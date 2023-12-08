@@ -3,6 +3,8 @@ import socket
 import logging
 import json
 
+import printToTest
+
 class ClientConfig:
     def __init__(self, email, mailserver, pop3, filters):
         self.email = email
@@ -67,6 +69,7 @@ class EmailDownloader:
     def save_mail(self, msg_num, email_content):
         email_content = email_content.replace("\r\n", "\n")
         mailbox_path = "./Mailbox/" + self.client_config.email
+        #printToTest.printToTest(email_content)
         if not os.path.exists(mailbox_path):
             os.makedirs(mailbox_path)
 
@@ -118,6 +121,7 @@ class EmailDownloader:
             # Lấy danh sách các email
             messages = response_list.split("\r\n")[1:-2]
 
+            listDownloaded  = []
             # Lưu từng email
             for message in messages:
                 msg_num = int(message.split()[0])
@@ -125,6 +129,8 @@ class EmailDownloader:
                 # Kiểm tra lại trạng thái tải của email
                 # Nếu email chưa được tải thì bắt đầu tải về
                 if msg_num not in self.downloaded_emails:
+                    listDownloaded.append(msg_num)
+                    """
                     mail_socket.send(f"RETR {msg_num}\r\n".encode())
 
                     email_content = ""
@@ -145,11 +151,18 @@ class EmailDownloader:
                     
                     # loại bỏ dòng cuối cùng
                     email_content = email_content.removesuffix('\r\n.\r\n')
+
+                    #printToTest.printToTest(email_content)
                     
                     self.save_mail(msg_num, email_content)
+                    """
+                    #mailbox_path = "./Mailbox/" + self.client_config.email
+                    #self.appendUnread(msg_num, mailbox_path)
                     
                     self.downloaded_emails.add(msg_num)
                     self.save_state(self.downloaded_emails)
+
+            return listDownloaded
 
         except socket.error as se:
             logging.error(f"Socket Error: {se}")

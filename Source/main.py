@@ -22,7 +22,7 @@ def main():
         sending_email.call_sending_email(buffer_config, buffer_sending)
 
     elif choice == 2:
-        console.printReceivedEmailList()
+        console.printReceivedEmailList(buffer_config['Email'])
 
     elif choice == 3:
         setting.setting()
