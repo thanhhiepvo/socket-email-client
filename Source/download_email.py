@@ -97,7 +97,7 @@ class EmailDownloader:
             with open(filename, "w") as file:
                 file.write(email_content)
 
-        self.appendUnread(msg_num, mailbox_path)
+        #self.appendUnread(msg_num, mailbox_path)
             
     def download_emails(self):
         try:

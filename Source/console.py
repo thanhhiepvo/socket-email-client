@@ -1,5 +1,11 @@
 import reading_email
 
+def getChoiceNumber(min, max):
+    choice = int(input())
+    while choice not in range(min, max + 1):
+        choice = int(input("Chọn lại: "))
+    return choice
+
 def printClientConsole():
     print("Vui lòng chọn Menu")
     print("1. Để gửi email")
@@ -7,9 +13,8 @@ def printClientConsole():
     print("3. Setting")
     print("4. Thoát")
 
-    choice = int(input("Bạn chọn: "))
-    while choice not in range(1, 5):
-        choice = int(input("Chọn lại:"))
+    print("Bạn chọn: ", end="")
+    choice = getChoiceNumber(1, 4)
 
     return choice
 
@@ -32,9 +37,9 @@ def printSendingEmail():
     subject = str(input("Subject: "))
     content = str(input("Content: "))
 
-    willSendFile = int(input("Có gửi kèm file (1. Có, 2. Không)"))
-    while willSendFile not in [1, 2]:
-        willSendFile = int(input("Nhập lại: "))
+    print("Có gửi kèm file (1. Có, 2. Không)")
+
+    willSendFile = getChoiceNumber(1, 2)
 
     filePaths = []
     if willSendFile == 1:
@@ -58,48 +63,126 @@ def printSendingEmail():
     return buffer
 
 def printReceivedEmailList(email):
+
+    def getTheBoxName(choice_Mailbox):
+        mail_box_list = ['Inbox', 'Project', 'Important', 'Work', 'Spam']
+        return mail_box_list[choice_Mailbox - 1]
+
     data = reading_email.read_manage_json(email)
+    while True:
+        print("Đây là danh sách các folder trong mailbox của bạn:")
+        print("1. Inbox")
+        print("2. Project")
+        print("3. Important")
+        print("4. Work")
+        print("5. Spam")
+        print("6. EXIT")
 
-    print("Đây là danh sách các folder trong mailbox của bạn:")
-    print("1. Inbox")
-    print("2. Project")
-    print("3. Important")
-    print("4. Work")
-    print("5. Spam")
-    print("6. EXIT")
+        print("Bạn muốn xem mail trong folder nào: ", end="")
+        choice_Mailbox = getChoiceNumber(1, 6)
 
-    nMailbox = int(input("Bạn muốn xem email trong folder nào: "))
-    while nMailbox not in range(1, 7):
-        nMailbox = int(input("Nhập lại: "))
+        if choice_Mailbox == 6:
+            return
 
-    if nMailbox == 1:
-        nMailbox = 'Inbox'
-        #box_data = reading_email.get_mail_in_box(data, 'Inbox')
-    elif nMailbox == 2:
-        nMailbox = 'Project'
-        #box_data = reading_email.get_mail_in_box(data, 'Project')
-    elif nMailbox == 3:
-        nMailbox = 'Important'
-        #box_data = reading_email.get_mail_in_box(data, 'Important')
-    elif nMailbox == 4:
-        nMailbox = 'Work'
-        #box_data = reading_email.get_mail_in_box(data, 'Work')
-    else:
-        nMailbox = 'Spam'
-        #box_data = reading_email.get_mail_in_box(data, 'Spam')
-
-    box_data = reading_email.get_mail_in_box(data, nMailbox)
+        choice_Mailbox = getTheBoxName(choice_Mailbox)
+        box_data = reading_email.get_mail_in_box(data, choice_Mailbox)
         
-    nLetters = len(box_data)
+        print_emails_in_box(box_data, email, choice_Mailbox)
+
+def print_emails_in_box(box_data, email, choice_Mailbox):
+    def getTheDemandOnFilter(filter_based):
+        while True:
+            print()
+            if not filter_based['sender_email']:
+                print("1. Lọc email dựa trên địa chỉ người gửi")
+            if not filter_based['subject']:
+                print("2. Lọc email dựa trên subject")
+            if not filter_based['content']:
+                print("3. Lọc dựa trên content")
+            print("4. Chọn lại")
+            print("5. Không")
+            print("Chọn số: ", end="")
+            choice_number = getChoiceNumber(1, 5)
+
+            if choice_number == 5:
+                return filter_based
+            elif choice_number == 4:
+                filter_based['sender_email'] = False
+                filter_based['subject'] = False
+                filter_based['content'] = False
+            elif choice_number == 1:
+                filter_based['sender_email'] = True
+            elif choice_number == 2:
+                filter_based['subject'] = True
+            else:
+                filter_based['content'] = True
+            
+            
+    #nLetters = len(box_data)
     reading_email.print_mails_into_console(box_data)
-    print(nLetters + 1, "EXIT")
 
-    choice_file = int(input("Bạn muốn xem email nào (nhập số): "))
-    while choice_file not in range(1, nLetters + 1):
-        choice_file = int(input("Nhập lại: "))
+    # map-check for filling
+    filter_based = dict()
+    filter_based['sender_email'] = False
+    filter_based['subject'] = False
+    filter_based['content'] = False
+    filter_based = getTheDemandOnFilter(filter_based)
 
-    print()
-    print("The content in this mail:")
-    print(reading_email.print_mail_content(box_data, choice_file, email, nMailbox))
+    if filter_based['sender_email']:
+        filter_data = fill_emails_based_sender_email(box_data)
+    if filter_based['subject']:
+        filter_data = fill_emails_based_subject(filter_data)
+    
+    nLetters = len(filter_data)
 
-    reading_email.markFileWasRead(email, box_data[choice_file - 1]['subject'])
+    while True:
+        if nLetters == 0:
+            print("Không có email nào")
+        else:
+            reading_email.print_mails_into_console(filter_data)
+        print(nLetters + 1, "EXIT")
+
+        choice_file = getChoiceNumber(1, nLetters + 1)
+
+        if choice_file == nLetters + 1:
+            break
+
+        print()
+        print("The content in this mail:")
+        print(reading_email.print_mail_content(box_data, choice_file, email, choice_Mailbox))
+
+        reading_email.markFileWasRead(email, box_data[choice_file - 1]['subject'])
+        input("Press Enter to continue...")
+
+def fill_emails_based_subject(data):
+    anything = str(input("Enter the thing you want to fill the subject: "))
+    anything = anything.upper()
+    final_data = []
+    for item in data:
+        subject = item['subject'].upper()
+        if anything in subject:
+            final_data.append(item)
+    return final_data
+
+def fill_emails_based_sender_email(data):
+    
+    def get_the_email_will_be_filled(sender_email):
+        for email in sender_email:
+            print(email)
+        enter_email = str(input("Enter an email above: "))
+        while enter_email not in sender_email:
+            print("This email you recent entered is not exist")
+            enter_email = str(input("Enter again: "))
+        return enter_email.strip()
+
+    sender_email = set()
+    for item in data:
+        sender_email.add(item['sender_email'])
+
+    the_email = get_the_email_will_be_filled(sender_email)
+    final_data = []
+    for item in data:
+        if item['sender_email'] == the_email:
+            final_data.append(item)
+    
+    return final_data

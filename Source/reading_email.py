@@ -27,11 +27,11 @@ def print_mails_into_console(data):
             print(count, ". Sender:", item["sender_name"], ", Subject:", item["subject"])
         count += 1
 
-def print_mail_content(data, choice_file, email, nMailbox):
+def print_mail_content(data, choice_file, email, choice_Mailbox):
     choice_file -= 1
     mail = data[choice_file]
 
-    mail_directory = './Mailbox/' + email + '/' + nMailbox + '/' + mail['subject'] + '.msg'
+    mail_directory = './Mailbox/' + email + '/' + choice_Mailbox + '/' + mail['subject'] + '.msg'
     
     with open(mail_directory, "r") as file:
         content = file.read()

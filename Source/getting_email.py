@@ -93,7 +93,7 @@ class EmailReader:
             with open(filename, "w") as file:
                 file.write(email_content)
 
-        self.appendUnread(subject, mailbox_path)
+        #self.appendUnread(subject, mailbox_path)
 
     def load_email_to_managing(self, subject, sender_email, sender_name, attachment=False):
         file_manage = './Mailbox/' + self.client_config.email + "/manage.json"
