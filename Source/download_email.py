@@ -1,7 +1,6 @@
 import os
 import socket
 import logging
-import json
 
 class ClientConfig:
     def __init__(self, email, mailserver, pop3, filters):
@@ -44,30 +43,10 @@ class EmailDownloader:
             if flag in email_content:
                 return True
         return False
-    
-    def appendUnread(self, msg_num, mailbox_path):
-        file_json = mailbox_path + "/unread.json"
-        file_name = str(msg_num) + ".msg"
-
-        data = []
-        if os.path.exists(file_json):
-            f = open(file_json)
-            data = json.load(f)
-            f.close()
-            data = data['unread']
-        data.append(file_name)
-
-        json_data = {
-            "unread": data
-        }
-
-        with open(file_json, 'w') as file:
-            json.dump(json_data, file, indent=4)
 
     def save_mail(self, msg_num, email_content):
         email_content = email_content.replace("\r\n", "\n")
         mailbox_path = "./Mailbox/" + self.client_config.email
-        #printToTest.printToTest(email_content)
         if not os.path.exists(mailbox_path):
             os.makedirs(mailbox_path)
 
@@ -94,8 +73,6 @@ class EmailDownloader:
             filename = f"{filter_folder}/{msg_num}.msg"
             with open(filename, "w") as file:
                 file.write(email_content)
-
-        #self.appendUnread(msg_num, mailbox_path)
             
     def download_emails(self):
         try:
@@ -128,34 +105,6 @@ class EmailDownloader:
                 # Nếu email chưa được tải thì bắt đầu tải về
                 if msg_num not in self.downloaded_emails:
                     listDownloaded.append(msg_num)
-                    """
-                    mail_socket.send(f"RETR {msg_num}\r\n".encode())
-
-                    email_content = ""
-                    while True:
-                        data = mail_socket.recv(1024).decode()
-
-                        if not data:
-                            break
-                    
-                        email_content += data
-
-                        if email_content.endswith('\r\n.\r\n'):
-                            break
-
-                    # Loại bỏ dòng đầu tiên "+OK ..."
-                    to_remove = email_content.split("\r\n")[0] 
-                    email_content = data.removeprefix(to_remove + "\r\n")
-                    
-                    # loại bỏ dòng cuối cùng
-                    email_content = email_content.removesuffix('\r\n.\r\n')
-
-                    #printToTest.printToTest(email_content)
-                    
-                    self.save_mail(msg_num, email_content)
-                    """
-                    #mailbox_path = "./Mailbox/" + self.client_config.email
-                    #self.appendUnread(msg_num, mailbox_path)
                     
                     self.downloaded_emails.add(msg_num)
                     self.save_state(self.downloaded_emails)

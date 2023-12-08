@@ -59,7 +59,6 @@ def printSendingEmail():
     buffer['content'] = content
     buffer['filePaths'] = filePaths
 
-    #return recievers, subject, content, nFiles, filePaths
     return buffer
 
 def printReceivedEmailList(email):
@@ -117,7 +116,6 @@ def print_emails_in_box(box_data, email, choice_Mailbox):
             else:
                 filter_based['content'] = True
             
-    #nLetters = len(box_data)
     reading_email.print_mails_into_console(box_data)
 
     # map-check for filling

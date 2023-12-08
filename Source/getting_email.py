@@ -34,25 +34,6 @@ class EmailReader:
                     return set()
         else:
             return set()
-        
-    def appendUnread(self, subject, mailbox_path):
-        file_json = mailbox_path + "/unread.json"
-        file_name = subject + ".msg"
-
-        data = []
-        if os.path.exists(file_json):
-            f = open(file_json)
-            data = json.load(f)
-            f.close()
-            data = data['unread']
-        data.append(file_name)
-
-        json_data = {
-            "unread": data
-        }
-
-        with open(file_json, 'w') as file:
-            json.dump(json_data, file, indent=4)
 
     def should_save_to_folder(self, email_content, flags):
         for flag in flags:
@@ -89,8 +70,6 @@ class EmailReader:
             filename = f"{filter_folder}/{subject}.msg"
             with open(filename, "w") as file:
                 file.write(email_content)
-
-        #self.appendUnread(subject, mailbox_path)
 
     def load_email_to_managing(self, subject, sender_email, sender_name, attachment=False):
         file_manage = './Mailbox/' + self.client_config.email + "/manage.json"
@@ -169,7 +148,6 @@ class EmailReader:
                     sender_name, sender_email, subject, mail_content = self.extract_email_info(response_retr)
                     self.load_email_to_managing(subject, sender_email, sender_name)
                 
-                #print(sender_name, sender_email, subject, mail_content)
                 self.save_mail_content(subject, mail_content)
 
             else:
@@ -206,7 +184,6 @@ class EmailReader:
 
         decode_data = base64.b64decode(attachment_data)
 
-        #attachment_directory = "./Mailbox/" + self.client_config.email + "/Inbox/" + str(email_number) + "/"
         attachment_directory = "./Mailbox/" + self.client_config.email + "/Inbox/" + subject + "/"
         if not os.path.exists(attachment_directory):
             os.makedirs(attachment_directory)
@@ -288,8 +265,6 @@ def call_getting_email(buffer_config):
     # Example usage of EmailDownloader
     downloader = EmailDownloader(email_config)
     listDownloaded = downloader.download_emails()
-
-    #print("finish email download")
 
     # Example usage of EmailReader
     reader = EmailReader(email_config)
