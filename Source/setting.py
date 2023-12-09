@@ -14,7 +14,7 @@ def create_or_check_config_file(file_path='config.json'):
                 "MailServer": "127.0.0.1",
                 "SMTP": 2225,
                 "POP3": 3335,
-                "Autoload": 10
+                "Autoload": 5
             }
         ]
     }
