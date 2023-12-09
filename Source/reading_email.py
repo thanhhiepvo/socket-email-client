@@ -39,7 +39,7 @@ def print_mails_into_console(data):
             print(count, ". Sender:", item["sender_name"], ", Subject:", item["subject"])
         count += 1
 
-def print_mail_content(data, choice_file, email, choice_Mailbox):
+def get_mail_content(data, choice_file, email, choice_Mailbox):
     choice_file -= 1
     mail = data[choice_file]
 

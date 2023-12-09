@@ -125,7 +125,7 @@ def print_emails_in_box(box_data, email, choice_Mailbox):
     filter_based['content'] = False
     filter_based = getTheDemandOnFilter(filter_based)
 
-    filter_data = fillMails(box_data, filter_based)
+    filter_data = fillMails(box_data, filter_based, email, choice_Mailbox)
     
     nLetters = len(filter_data)
 
@@ -159,7 +159,7 @@ def print_emails_in_box(box_data, email, choice_Mailbox):
 
         print()
         print("The content in this mail:")
-        print(reading_email.print_mail_content(box_data, choice_file, email, choice_Mailbox))
+        print(reading_email.get_mail_content(box_data, choice_file, email, choice_Mailbox))
 
         reading_email.markFileWasRead(email, box_data[choice_file - 1]['subject'])
         input("Press Enter to continue...")
@@ -178,11 +178,13 @@ def choice_destinate_folder(the_mail):
     choice_number = getChoiceNumber(1, 5)
     return sub_box[choice_number - 1]
 
-def fillMails(filter_data, filter_based):
+def fillMails(filter_data, filter_based, email, sub_box):
     if filter_based['sender_email']:
         filter_data = fill_emails_based_sender_email(filter_data)
     if filter_based['subject']:
         filter_data = fill_emails_based_subject(filter_data)
+    if filter_based['content']:
+        filter_data = fill_emails_based_content(filter_data, email, sub_box)
 
     return filter_data
 
@@ -194,6 +196,18 @@ def getTheMovedFile(filter_data, nLetters):
     if choice_number == nLetters:
         return None
     return choice_number
+
+def fill_emails_based_content(data, email, sub_box):
+    anything = str(input("Enter the thing you want to fill the subject: "))
+    anything = anything.upper()
+    final_data = []
+    for i in range(len(data)):
+        email_content = reading_email.get_mail_content(data, i + 1, email, sub_box)
+        email_content = email_content.upper()
+        if anything in email_content:
+            final_data.append(data[i])
+    return final_data
+
 
 def fill_emails_based_subject(data):
     anything = str(input("Enter the thing you want to fill the subject: "))
