@@ -19,16 +19,20 @@ class EmailFilter:
 class EmailDownloader:
     def __init__(self, client_config):
         self.client_config = client_config
-        self.state_filename = "download_state.txt"
+        self.state_folder = "State"
+        self.state_filename = f"{self.client_config.email}.txt"
+        self.state_filepath = os.path.join(self.state_folder, self.state_filename)
         self.downloaded_emails = self.load_state()
+        if not os.path.exists(self.state_folder):
+            os.makedirs(self.state_folder)
 
     def save_state(self, state):
-        with open(self.state_filename, "w") as state_file:
+        with open(self.state_filepath, "w") as state_file:
             state_file.write(",".join(map(str, state)))
 
     def load_state(self):
-        if os.path.exists(self.state_filename):
-            with open(self.state_filename, "r") as state_file:
+        if os.path.exists(self.state_filepath):
+            with open(self.state_filepath, "r") as state_file:
                 state_content = state_file.read().strip()
 
                 if state_content:
@@ -52,7 +56,6 @@ class EmailDownloader:
 
         saved = False
 
-        # Phân loại email và tải về các folder cụ thể
         for filter in self.client_config.filters:
             if self.should_save_to_folder(email_content, filter.flags):
                 filter_folder = os.path.join(mailbox_path, filter.folder)
@@ -76,33 +79,19 @@ class EmailDownloader:
             
     def download_emails(self):
         try:
-            # Mở socket
             mail_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
             server_address = (self.client_config.mailserver, self.client_config.pop3)
             mail_socket.connect(server_address)
-
-            # Nhận câu trả lời đầu tiên
             response_user = mail_socket.recv(1024).decode()
-
-            # Gửi lệnh USER
             mail_socket.send(f"USER {self.client_config.email}\r\n".encode())
             response_user = mail_socket.recv(1024).decode()
-
-            # Gửi lệnh LIST
             mail_socket.send(f"LIST\r\n".encode())
             response_list = mail_socket.recv(1024).decode()
-            # print(f"List: {response_list}")
-
-            # Lấy danh sách các email
             messages = response_list.split("\r\n")[1:-2]
 
             listDownloaded  = []
-            # Lưu từng email
             for message in messages:
                 msg_num = int(message.split()[0])
-                
-                # Kiểm tra lại trạng thái tải của email
-                # Nếu email chưa được tải thì bắt đầu tải về
                 if msg_num not in self.downloaded_emails:
                     listDownloaded.append(msg_num)
                     
