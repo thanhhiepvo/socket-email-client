@@ -19,16 +19,20 @@ class EmailFilter:
 class EmailDownloader:
     def __init__(self, client_config):
         self.client_config = client_config
-        self.state_filename = "download_state.txt"
+        self.state_folder = "State"
+        self.state_filename = f"{self.client_config.email}.txt"
+        self.state_filepath = os.path.join(self.state_folder, self.state_filename)
         self.downloaded_emails = self.load_state()
+        if not os.path.exists(self.state_folder):
+            os.makedirs(self.state_folder)
 
     def save_state(self, state):
-        with open(self.state_filename, "w") as state_file:
+        with open(self.state_filepath, "w") as state_file:
             state_file.write(",".join(map(str, state)))
 
     def load_state(self):
-        if os.path.exists(self.state_filename):
-            with open(self.state_filename, "r") as state_file:
+        if os.path.exists(self.state_filepath):
+            with open(self.state_filepath, "r") as state_file:
                 state_content = state_file.read().strip()
 
                 if state_content:
