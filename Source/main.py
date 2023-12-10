@@ -18,11 +18,13 @@ def print_menu(buffer_config):
         if choice == 4:
             global exit_flag
             exit_flag = True
+            print("Đang thoát...")
             break
 
         if choice == 1:  # Using for sending Email
             buffer_sending = console.printSendingEmail()
             sending_email.call_sending_email(buffer_config, buffer_sending)
+            print("\nĐã gửi email thành công!!\n")
 
         elif choice == 2:
             console.print_received_email_list(buffer_config["Email"])
