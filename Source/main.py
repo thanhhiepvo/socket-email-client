@@ -22,7 +22,7 @@ def print_menu(buffer_config):
             break
 
         if choice == 1:  # Using for sending Email
-            buffer_sending = console.printSendingEmail()
+            buffer_sending = console.print_sending_email()
             sending_email.call_sending_email(buffer_config, buffer_sending)
             print("\nĐã gửi email thành công!!\n")
 
