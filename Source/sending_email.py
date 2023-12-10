@@ -165,8 +165,9 @@ def get_file_data(file_path):
     with open(file_path, "rb") as file:
         data = base64.b64encode(file.read()).decode()
     block = ""
-    for i in range(0, len(data), 72):
-        block += data[i : i + 72] + CRLF
+    line_limit = 72
+    for i in range(0, len(data), line_limit):
+        block += data[i : i + line_limit] + CRLF
     return block
 
 
@@ -210,29 +211,17 @@ def send_email(
         end_sending_mail(client_socket)
 
 
-"""
-if __name__ == "__main__":
-    try:
-        client_socket = create_socket()
-        connect_server(client_socket, "127.0.0.1", 2225)
-        greet_server(client_socket)
-        send_email(
-            client_socket,
-            "Test Name",
-            "test@email.com",
-            ["bachdatcuber@gmail.com", "testto@email.com"],
-            ["lhbdat22@clc.fitus.edu.vn", "testcc2@email.com"],
-            ["testbcc@email.com", "testbcc2@email.com"],
-            "Test subject",
-            "Kiểm thử thôi á bro",
-            [
-                "D:\STUDYING\MY CLASSROOM\CSC10008_22CLC04 - Computer Networking\Socket project\Local\Cho-Miniature-Poodle-5.jpg",
-                "D:\STUDYING\MY CLASSROOM\CSC10008_22CLC04 - Computer Networking\Socket project\Local\\test.txt",
-                "D:\STUDYING\MY CLASSROOM\CSC10008_22CLC04 - Computer Networking\Socket project\Local\wallpaperflare.com_wallpaper.jpg",
-                "D:\STUDYING\AIO2023\Main Curriculum\Module 2\Week 5 - Linear Algebra and Its Application\Lessons\\230628 - M02ML09 - Basic Linear Algebra and its Applications\\230628 - M02ML09 - Record.mp4",
-            ],
-        )
-        close_connection(client_socket)
-    except Error as error:
-        print("Lỗi: ", error)
-"""
+def call_sending_email(buffer_config, buffer_sending):
+    client_socket = create_socket()
+    connect_server(client_socket, buffer_config["MailServer"], buffer_config["SMTP"])
+    send_email(
+        client_socket,
+        buffer_config["Username"],
+        buffer_config["Email"],
+        buffer_sending["To"],
+        buffer_sending["CC"],
+        buffer_sending["BCC"],
+        buffer_sending["subject"],
+        buffer_sending["content"],
+        buffer_sending["filePaths"],
+    )
