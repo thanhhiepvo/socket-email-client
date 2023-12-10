@@ -220,6 +220,21 @@ class EmailReader:
         self.save_state(self.read_emails)
         print(f"Email {email_number} marked as read.")
 
+    def print_list(self):
+        print("DEBUG: Emails structure:", self.read_emails)
+        print("Đây là danh sách email trong mailbox của bạn: ")
+        if not self.read_emails:
+            print("Trống")
+        else:
+            number = 1
+            for email in self.read_emails:
+                print("DEBUG: Current email tuple:", email)
+                is_read = ''
+                if not email[3]:
+                    is_read = "(chưa đọc)"
+                print(f"{number}.{is_read} {email[0]} {email[1]}")
+                number += 1
+
 def call_getting_email(buffer_config):
     # Replace these values with your actual configurations
     email_config = ClientConfig(
