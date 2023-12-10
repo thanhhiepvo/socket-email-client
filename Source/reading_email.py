@@ -34,9 +34,9 @@ def print_mails_into_console(data):
     count = 1
     for item in data:
         if item['read'] == 'No':
-            print(count, ". Sender:", item["sender_name"], ", Subject:", item["subject"], " (chưa đọc)")
+            print("(chưa đọc)",count, ". Sender:", item["sender_name"], ", Subject:", item["subject"])
         else:
-            print(count, ". Sender:", item["sender_name"], ", Subject:", item["subject"])
+            print("         ",count, ". Sender:", item["sender_name"], ", Subject:", item["subject"])
         count += 1
 
 def get_mail_content(data, choice_file, email, choice_Mailbox):
@@ -68,15 +68,14 @@ def mark_file_was_read_on_disk(email, mail_card):
     with open(file_path, "w") as file:
         json.dump(json_data, file, indent=4)
 
+def get_file_name_in_folder(folder_path):
+    files = glob.glob(os.path.join(folder_path, '*'))
+    files = [f for f in files if os.path.isfile(f)]
+    file = files[0]
+    file = file[file.rfind('\\') + 1:]
+    return file
+
 def move_file(email, the_email, des_box):
-
-    def get_file_name_in_folder(folder_path):
-        files = glob.glob(os.path.join(folder_path, '*'))
-        files = [f for f in files if os.path.isfile(f)]
-        file = files[0]
-        file = file[file.rfind('\\') + 1:]
-        return file
-
     data = read_manage_json(email)
     index = data.index(the_email)
 

@@ -1,4 +1,7 @@
 import reading_email
+import subprocess
+import platform
+import os
 
 def get_choice_number(min, max):
     choice = int(input())
@@ -167,12 +170,32 @@ def print_emails_in_box(box_data, email, choice_Mailbox):
 
         print()
         print("The content in this mail:")
-        choice_file_in_box_data = find_mail_index_in_box_data(filter_data[choice_file_in_filter_data], box_data)
+        email_card = filter_data[choice_file_in_filter_data]
+        choice_file_in_box_data = find_mail_index_in_box_data(email_card, box_data)
         print(reading_email.get_mail_content(box_data, choice_file_in_filter_data, email, choice_Mailbox))
 
         reading_email.mark_file_was_read_on_disk(email, box_data[choice_file_in_box_data])
         filter_data[choice_file_in_filter_data]['read'] = 'Yes'
         box_data[choice_file_in_box_data]['read'] = 'Yes'
+
+        # open file attachment if having
+        if email_card['attachment'] == True:
+            file_folder = os.getcwd() + "\Mailbox\\" + email + "\\" + email_card['box'] + "\\" + email_card['subject'] + '\\'
+            file_name = reading_email.get_file_name_in_folder(file_folder)
+            file_directory = file_folder + file_name
+            print("direc:", file_directory)
+
+            system = platform.system()
+            try:
+                if system == "Windows":
+                    subprocess.call(['open', file_directory]) # MacOS
+                elif system == "Darwin":
+                    subprocess.call(['start', file_directory], shell=True)  # Windows
+                else:
+                    print("Hệ điều hành không xác định, không thể mở file đính kèm")
+            except Exception as e:
+                print(f"Lỗi: {e}")
+
         input("Press Enter to continue...")
 
 def choice_destinate_folder(the_mail):
