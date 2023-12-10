@@ -22,7 +22,7 @@ def create_or_check_config_file(file_path='config.json'):
     with open(file_path, 'w') as file:
         json.dump(default_data, file, indent=4)
 
-def readConfig():
+def read_config():
     f = open('config.json')
     data = json.load(f)
     f.close()

@@ -50,7 +50,7 @@ def get_mail_content(data, choice_file, email, choice_Mailbox):
 
     return content
 
-def markFileWasRead(email, subject):
+def mark_file_was_read_on_disk(email, mail_card):
     file_path = "./Mailbox/" + email + "/manage.json"
 
     with open(file_path, 'r') as file:
@@ -58,7 +58,7 @@ def markFileWasRead(email, subject):
 
     data = config_data['emails']
     for i in range(len(data)):
-        if data[i]['subject'] == subject:
+        if data[i] == mail_card:
             data[i]['read'] = "Yes"
 
     json_data = {
@@ -68,7 +68,7 @@ def markFileWasRead(email, subject):
     with open(file_path, "w") as file:
         json.dump(json_data, file, indent=4)
 
-def moveFile(email, the_email, des_box):
+def move_file(email, the_email, des_box):
 
     def get_file_name_in_folder(folder_path):
         files = glob.glob(os.path.join(folder_path, '*'))

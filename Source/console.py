@@ -1,12 +1,12 @@
 import reading_email
 
-def getChoiceNumber(min, max):
+def get_choice_number(min, max):
     choice = int(input())
     while choice not in range(min, max + 1):
         choice = int(input("Chọn lại: "))
     return choice
 
-def printClientConsole():
+def print_client_console():
     print("Vui lòng chọn Menu")
     print("1. Để gửi email")
     print("2. Để xem danh sách các email đã nhận")
@@ -14,11 +14,11 @@ def printClientConsole():
     print("4. Thoát")
 
     print("Bạn chọn: ", end="")
-    choice = getChoiceNumber(1, 4)
+    choice = get_choice_number(1, 4)
 
     return choice
 
-def printSendingEmail():
+def print_sending_email():
     print("Đây là thông tin soạn email: ", end="")
     print("(nếu không điền vui lòng nhấn enter để bỏ qua)")
 
@@ -39,7 +39,7 @@ def printSendingEmail():
 
     print("Có gửi kèm file (1. Có, 2. Không)")
 
-    willSendFile = getChoiceNumber(1, 2)
+    willSendFile = get_choice_number(1, 2)
 
     filePaths = []
     if willSendFile == 1:
@@ -61,9 +61,9 @@ def printSendingEmail():
 
     return buffer
 
-def printReceivedEmailList(email):
+def print_received_email_list(email):
 
-    def getTheBoxName(choice_Mailbox):
+    def get_the_box_name(choice_Mailbox):
         mail_box_list = ['Inbox', 'Project', 'Important', 'Work', 'Spam']
         return mail_box_list[choice_Mailbox - 1]
 
@@ -78,18 +78,24 @@ def printReceivedEmailList(email):
         print("6. EXIT")
 
         print("Bạn muốn xem mail trong folder nào: ", end="")
-        choice_Mailbox = getChoiceNumber(1, 6)
+        choice_Mailbox = get_choice_number(1, 6)
 
         if choice_Mailbox == 6:
             return
 
-        choice_Mailbox = getTheBoxName(choice_Mailbox)
+        choice_Mailbox = get_the_box_name(choice_Mailbox)
         box_data = reading_email.get_mail_in_box(data, choice_Mailbox)
         
         print_emails_in_box(box_data, email, choice_Mailbox)
 
 def print_emails_in_box(box_data, email, choice_Mailbox):
-    def getTheDemandOnFilter(filter_based):
+    def find_mail_index_in_box_data(mail, box_data):
+        for i in range(len(box_data)):
+            if box_data[i] == mail:
+                return i
+        return None
+
+    def get_the_demand_on_filter(filter_based):
         while True:
             print()
             if not filter_based['sender_email']:
@@ -101,7 +107,7 @@ def print_emails_in_box(box_data, email, choice_Mailbox):
             print("4. Chọn lại")
             print("5. Không")
             print("Chọn số: ", end="")
-            choice_number = getChoiceNumber(1, 5)
+            choice_number = get_choice_number(1, 5)
 
             if choice_number == 5:
                 return filter_based
@@ -123,9 +129,9 @@ def print_emails_in_box(box_data, email, choice_Mailbox):
     filter_based['sender_email'] = False
     filter_based['subject'] = False
     filter_based['content'] = False
-    filter_based = getTheDemandOnFilter(filter_based)
+    filter_based = get_the_demand_on_filter(filter_based)
 
-    filter_data = fillMails(box_data, filter_based, email, choice_Mailbox)
+    filter_data = fill_mails(box_data, filter_based, email, choice_Mailbox)
     
     nLetters = len(filter_data)
 
@@ -137,13 +143,13 @@ def print_emails_in_box(box_data, email, choice_Mailbox):
             reading_email.print_mails_into_console(filter_data)
         print(nLetters + 1, "EXIT")
 
-        choice_file = getChoiceNumber(0, nLetters + 1)
+        choice_file_in_filter_data = get_choice_number(0, nLetters + 1)
 
-        if choice_file == nLetters + 1:
+        if choice_file_in_filter_data == nLetters + 1:
             break
 
-        if choice_file == 0:
-            moved_file = getTheMovedFile(filter_data, nLetters)
+        if choice_file_in_filter_data == 0:
+            moved_file = get_the_moved_file(filter_data, nLetters)
 
             if moved_file == None:
                 continue
@@ -154,14 +160,19 @@ def print_emails_in_box(box_data, email, choice_Mailbox):
             filter_data.remove(the_mail)
             nLetters -= 1
             
-            reading_email.moveFile(email, the_mail, des_box)
+            reading_email.move_file(email, the_mail, des_box)
             continue
+
+        choice_file_in_filter_data -= 1 # because index in list count from 0
 
         print()
         print("The content in this mail:")
-        print(reading_email.get_mail_content(box_data, choice_file, email, choice_Mailbox))
+        choice_file_in_box_data = find_mail_index_in_box_data(filter_data[choice_file_in_filter_data], box_data)
+        print(reading_email.get_mail_content(box_data, choice_file_in_filter_data, email, choice_Mailbox))
 
-        reading_email.markFileWasRead(email, box_data[choice_file - 1]['subject'])
+        reading_email.mark_file_was_read_on_disk(email, box_data[choice_file_in_box_data])
+        filter_data[choice_file_in_filter_data]['read'] = 'Yes'
+        box_data[choice_file_in_box_data]['read'] = 'Yes'
         input("Press Enter to continue...")
 
 def choice_destinate_folder(the_mail):
@@ -175,10 +186,10 @@ def choice_destinate_folder(the_mail):
         print(count, ".", item)
         count += 1
     print("Choice the destination folder: ", end="")
-    choice_number = getChoiceNumber(1, 5)
+    choice_number = get_choice_number(1, 5)
     return sub_box[choice_number - 1]
 
-def fillMails(filter_data, filter_based, email, sub_box):
+def fill_mails(filter_data, filter_based, email, sub_box):
     if filter_based['sender_email']:
         filter_data = fill_emails_based_sender_email(filter_data)
     if filter_based['subject']:
@@ -188,17 +199,17 @@ def fillMails(filter_data, filter_based, email, sub_box):
 
     return filter_data
 
-def getTheMovedFile(filter_data, nLetters):
+def get_the_moved_file(filter_data, nLetters):
     reading_email.print_mails_into_console(filter_data)
     print("Choose the file you want to move: ", end="")
-    choice_number = getChoiceNumber(1, nLetters + 1)
+    choice_number = get_choice_number(1, nLetters + 1)
 
     if choice_number == nLetters:
         return None
     return choice_number
 
 def fill_emails_based_content(data, email, sub_box):
-    anything = str(input("Enter the thing you want to fill the subject: "))
+    anything = str(input("Enter the thing you want to fill the content: "))
     anything = anything.upper()
     final_data = []
     for i in range(len(data)):

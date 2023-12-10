@@ -11,9 +11,9 @@ import threading
 exit_flag = False
 
 
-def printMenu(buffer_config):
+def print_menu(buffer_config):
     while True:
-        choice = console.printClientConsole()
+        choice = console.print_client_console()
 
         if choice == 4:
             global exit_flag
@@ -25,7 +25,7 @@ def printMenu(buffer_config):
             sending_email.call_sending_email(buffer_config, buffer_sending)
 
         elif choice == 2:
-            console.printReceivedEmailList(buffer_config["Email"])
+            console.print_received_email_list(buffer_config["Email"])
 
         elif choice == 3:
             setting.setting()
@@ -35,7 +35,7 @@ def printMenu(buffer_config):
 
 def get_email_loop(buffer_config):
     if not exit_flag:
-        buffer_config = setting.readConfig()
+        buffer_config = setting.read_config()
         getting_email.call_getting_email(buffer_config)
         threading.Timer(
             buffer_config["Autoload"], get_email_loop, args=[buffer_config]
@@ -46,12 +46,12 @@ def get_email_loop(buffer_config):
 def main():
     setting.create_or_check_config_file()
 
-    buffer_config = setting.readConfig()
+    buffer_config = setting.read_config()
 
     thread = threading.Thread(target=get_email_loop, args=(buffer_config,))
     thread.start()
 
-    printMenu(buffer_config)
+    print_menu(buffer_config)
     thread.join()
 
 
