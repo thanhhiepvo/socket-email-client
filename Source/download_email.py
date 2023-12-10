@@ -56,7 +56,6 @@ class EmailDownloader:
 
         saved = False
 
-        # Phân loại email và tải về các folder cụ thể
         for filter in self.client_config.filters:
             if self.should_save_to_folder(email_content, filter.flags):
                 filter_folder = os.path.join(mailbox_path, filter.folder)
@@ -80,33 +79,19 @@ class EmailDownloader:
             
     def download_emails(self):
         try:
-            # Mở socket
             mail_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
             server_address = (self.client_config.mailserver, self.client_config.pop3)
             mail_socket.connect(server_address)
-
-            # Nhận câu trả lời đầu tiên
             response_user = mail_socket.recv(1024).decode()
-
-            # Gửi lệnh USER
             mail_socket.send(f"USER {self.client_config.email}\r\n".encode())
             response_user = mail_socket.recv(1024).decode()
-
-            # Gửi lệnh LIST
             mail_socket.send(f"LIST\r\n".encode())
             response_list = mail_socket.recv(1024).decode()
-            # print(f"List: {response_list}")
-
-            # Lấy danh sách các email
             messages = response_list.split("\r\n")[1:-2]
 
             listDownloaded  = []
-            # Lưu từng email
             for message in messages:
                 msg_num = int(message.split()[0])
-                
-                # Kiểm tra lại trạng thái tải của email
-                # Nếu email chưa được tải thì bắt đầu tải về
                 if msg_num not in self.downloaded_emails:
                     listDownloaded.append(msg_num)
                     
