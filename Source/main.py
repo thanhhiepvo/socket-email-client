@@ -15,6 +15,7 @@ def printMenu(buffer_config):
         choice = console.printClientConsole()
 
         if choice == 4:
+            global exit_flag
             exit_flag = True
             break
 
@@ -35,6 +36,7 @@ def get_email_loop(buffer_config):
     if not exit_flag:
         buffer_config = setting.readConfig()
         #print("autoload:", buffer_config['Autoload'])
+        #print(buffer_config['Email'])
         getting_email.call_getting_email(buffer_config)
         threading.Timer(buffer_config['Autoload'], get_email_loop, args=[buffer_config]).start()
         #time.sleep(buffer_config['Autoload'])

@@ -48,7 +48,7 @@ def printSendingEmail():
             nFiles = int(input("Nhập lại: "))
 
         for i in range(0, nFiles):
-            path = str(input("Cho biết đường dẫn file thứ", i + 1))
+            path = str(input(f"Cho biết đường dẫn file thứ {i + 1}"))
             filePaths.append(path)
     
     buffer = dict()
