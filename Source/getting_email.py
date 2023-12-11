@@ -179,7 +179,7 @@ class EmailReader:
         with open(attachment_file_path, "wb") as file:
             file.write(decode_data)
 
-        print(f"Đã lưu file đính kèm của Email {email_number} vào đường dẫn: {attachment_file_path}")
+        #print(f"Đã lưu file đính kèm của Email {email_number} vào đường dẫn: {attachment_file_path}")
 
     def extract_email_info(self, email_content):
         msg = email.message_from_string(email_content)
