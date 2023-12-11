@@ -1,6 +1,5 @@
 import os
 import email
-from email import policy
 from email.header import decode_header
 import socket
 import json
@@ -18,6 +17,7 @@ class EmailReader:
         self.state_filename = f"{self.client_config.email}.txt"
         self.state_filepath = os.path.join(self.state_folder, self.state_filename)
         self.downloaded_emails = self.load_state()
+        self.read_emails = self.load_state()
         if not os.path.exists(self.state_folder):
             os.makedirs(self.state_folder)
 
@@ -101,6 +101,7 @@ class EmailReader:
             mail_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
             server_address = (self.client_config.mailserver, self.client_config.pop3)
             mail_socket.connect(server_address)
+            response_user = mail_socket.recv(1024).decode()
             mail_socket.send(f"USER {self.client_config.email}\r\n".encode())
             response_user = mail_socket.recv(1024).decode()
 
