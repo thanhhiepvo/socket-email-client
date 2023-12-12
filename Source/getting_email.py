@@ -10,6 +10,8 @@ from download_email import EmailDownloader
 
 import base64
 
+import file_state
+
 class EmailReader:
     def __init__(self, client_config):
         self.client_config = client_config
@@ -74,9 +76,13 @@ class EmailReader:
 
         data = []
         if os.path.exists(file_manage):
+            while file_state.manage_state: # avoid critical section
+                pass
             f = open(file_manage)
+            file_state.manage_state = True
             data = json.load(f)
             f.close()
+            file_state.manage_state = False
             data = data['emails']
         
         new_mail = {
@@ -93,8 +99,12 @@ class EmailReader:
             'emails': data
         }
 
+        while file_state.manage_state:
+            pass
+        file_state.manage_state = True
         with open(file_manage, 'w') as file:
             json.dump(json_data, file, indent=4)
+        file_state.manage_state = False
         
     def read_email(self, email_number):
         try:

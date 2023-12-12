@@ -3,6 +3,8 @@ import os
 import shutil
 import glob
 
+import file_state
+
 def read_manage_json(email):
     file_path = "./Mailbox/" + email + "/manage.json"
 
@@ -19,8 +21,12 @@ def write_manage_json(email, data):
         "emails": data
     }
 
+    while file_state.manage_state:
+        pass
+    file_state.manage_state = True
     with open(file_path, 'w') as file:
         json.dump(json_data, file, indent=4)
+    file_state.manage_state = False
 
 def get_mail_in_box(data, box):
     box_data = []
@@ -53,8 +59,12 @@ def get_mail_content(data, choice_file, email, choice_Mailbox):
 def mark_file_was_read_on_disk(email, mail_card):
     file_path = "./Mailbox/" + email + "/manage.json"
 
+    while file_state.manage_state:
+        pass
+    file_state.manage_state = True
     with open(file_path, 'r') as file:
         config_data = json.load(file)
+    file_state.manage_state = False
 
     data = config_data['emails']
     for i in range(len(data)):
@@ -65,8 +75,12 @@ def mark_file_was_read_on_disk(email, mail_card):
         "emails": data
     }
     
+    while file_state.manage_state:
+        pass
+    file_state.manage_state = True
     with open(file_path, "w") as file:
         json.dump(json_data, file, indent=4)
+    file_state.manage_state = False
 
 def get_file_name_in_folder(folder_path):
     files = glob.glob(os.path.join(folder_path, '*'))
