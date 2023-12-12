@@ -75,10 +75,20 @@ def print_sending_email():
     return buffer
 
 
+def check_email_existence(email):
+    file_path = "./Mailbox/" + email + "/manage.json"
+    return os.path.exists(file_path)
+
+
 def print_received_email_list(email):
     def get_the_box_name(choice_Mailbox):
         mail_box_list = ["Inbox", "Project", "Important", "Work", "Spam"]
         return mail_box_list[choice_Mailbox - 1]
+
+    if not check_email_existence(email):
+        print("Email trong setting không tồn tại trong Mailbox của server!!")
+        input("Nhấn enter để trở lại menu!!")
+        return
 
     data = reading_email.read_manage_json(email)
     while True:
@@ -189,13 +199,24 @@ def print_emails_in_box(box_data, email, choice_Mailbox):
             )
         )
 
-        reading_email.mark_file_was_read_on_disk(email, box_data[choice_file_in_box_data])
-        filter_data[choice_file_in_filter_data]['read'] = 'Yes'
-        box_data[choice_file_in_box_data]['read'] = 'Yes'
+        reading_email.mark_file_was_read_on_disk(
+            email, box_data[choice_file_in_box_data]
+        )
+        filter_data[choice_file_in_filter_data]["read"] = "Yes"
+        box_data[choice_file_in_box_data]["read"] = "Yes"
 
         # open file attachment if having
-        if email_card['attachment'] == True:
-            file_folder = os.getcwd() + "\Mailbox\\" + email + "\\" + email_card['box'] + "\\" + email_card['subject'] + '\\'
+        if email_card["attachment"] == True:
+            file_folder = (
+                os.getcwd()
+                + "\Mailbox\\"
+                + email
+                + "\\"
+                + email_card["box"]
+                + "\\"
+                + email_card["subject"]
+                + "\\"
+            )
             file_name = reading_email.get_file_name_in_folder(file_folder)
             file_directory = file_folder + file_name
             print("direc:", file_directory)
@@ -203,9 +224,9 @@ def print_emails_in_box(box_data, email, choice_Mailbox):
             system = platform.system()
             try:
                 if system == "Windows":
-                    subprocess.call(['open', file_directory]) # MacOS
+                    subprocess.call(["open", file_directory])  # MacOS
                 elif system == "Darwin":
-                    subprocess.call(['start', file_directory], shell=True)  # Windows
+                    subprocess.call(["start", file_directory], shell=True)  # Windows
                 else:
                     print("Hệ điều hành không xác định, không thể mở file đính kèm")
             except Exception as e:
