@@ -97,3 +97,5 @@ def setting():
         with open(file_json, "w") as file:
             json.dump(json_data, file, indent=4)
         count_down_update_time(old_autoload_time + 5)
+
+    return data
