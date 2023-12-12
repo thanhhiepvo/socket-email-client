@@ -31,7 +31,7 @@ def print_menu(buffer_config):
             console.print_received_email_list(buffer_config["Email"])
 
         elif choice == 3:
-            setting.setting()
+            buffer_config = setting.setting()
         else:
             pass
 
