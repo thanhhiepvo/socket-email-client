@@ -197,7 +197,7 @@ def send_email(
                 send_line(client_socket, get_file_data(file_path))
             else:
                 print(
-                    f"{get_file_name(file_path)} có dung lượng lớn hơn 3MB nên sẽ không được gửi đi!!"
+                    f"\n{get_file_name(file_path)} có dung lượng lớn hơn 3MB nên sẽ không được gửi đi!!"
                 )
         end_sending_mail(client_socket, boundary)
     else:
