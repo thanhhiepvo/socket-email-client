@@ -73,14 +73,21 @@ class EmailReader:
     def load_email_to_managing(
         self, subject, sender_email, sender_name, attachment=False
     ):
-        file_manage = "./Mailbox/" + self.client_config.email + "/manage.json"
+        folder_box = "./Mailbox/" + self.client_config.email
+        file_manage =  folder_box + "/manage.json"
 
+        if not os.path.exists(folder_box):
+            os.makedirs(folder_box)
+        
         data = []
         if os.path.exists(file_manage):
             f = open(file_manage)
             data = json.load(f)
             f.close()
             data = data["emails"]
+        else:
+            with open(file_manage, 'w') as file:
+                file.write("")
 
         new_mail = {
             "subject": subject,
@@ -94,6 +101,7 @@ class EmailReader:
         data.append(new_mail)
         json_data = {"emails": data}
 
+        #print("A")
         with open(file_manage, "w") as file:
             json.dump(json_data, file, indent=4)
 
@@ -125,7 +133,7 @@ class EmailReader:
                 response_retr = response_retr.removeprefix(to_remove + "\r\n")
                 response_retr = response_retr.removesuffix("\r\n.\r\n")
 
-                if "Content-Disposition: attachment" in response_retr:
+                if "Content-Disposition: attachment" in response_retr: # có file
                     file_start = response_retr.rfind("Content-Type:")
                     attachment = response_retr[file_start:]
                     (
@@ -139,13 +147,14 @@ class EmailReader:
                     self.load_email_to_managing(
                         subject, sender_email, sender_name, True
                     )
-                else:
+                else: # không có file
                     (
                         sender_name,
                         sender_email,
                         subject,
                         mail_content,
                     ) = self.extract_email_info(response_retr)
+                    #print(sender_name, sender_email, subject, mail_content)
                     self.load_email_to_managing(subject, sender_email, sender_name)
 
                 self.save_mail_content(subject, mail_content)
@@ -206,7 +215,7 @@ class EmailReader:
         if isinstance(subject, bytes):
             subject = subject.decode()
 
-        sender_email = sender[sender.find("<") + 1 : sender.find(">") - 1]
+        sender_email = sender[sender.find("<") + 1 : sender.find(">")]
         sender_name = sender[: sender.find(sender_email) - 2]
 
         if msg.is_multipart():
@@ -269,7 +278,9 @@ def call_getting_email(buffer_config):
 
     # Example usage of EmailDownloader
     downloader = EmailDownloader(email_config)
-    listDownloaded = downloader.download_emails()
+    listDownloaded = downloader.download_emails() 
+
+    #print(listDownloaded)
 
     # Example usage of EmailReader
     reader = EmailReader(email_config)

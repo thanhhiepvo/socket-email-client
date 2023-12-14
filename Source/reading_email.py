@@ -57,7 +57,6 @@ def print_mails_into_console(data):
 
 
 def get_mail_content(data, choice_file, email, choice_Mailbox):
-    choice_file -= 1
     mail = data[choice_file]
 
     mail_directory = (

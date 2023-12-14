@@ -40,7 +40,7 @@ def get_email_loop(buffer_config):
     if not exit_flag:
         buffer_config = setting.read_config()
         getting_email.call_getting_email(buffer_config)
-        print(buffer_config["Email"])
+        #print(buffer_config["Email"])
         threading.Timer(
             buffer_config["Autoload"], get_email_loop, args=[buffer_config]
         ).start()
