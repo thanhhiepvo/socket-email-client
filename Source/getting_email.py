@@ -150,7 +150,7 @@ class EmailReader:
             else:
                 print("Đăng nhập thất bại. Hãy kiểm tra lại.")
         except Exception as e:
-            print(f"Error while reading email: {e}")
+            print(f"Lỗi khi đọc mail: {e}")
         finally:
             mail_socket.close()
 
