@@ -15,7 +15,7 @@ def print_client_console():
     print("Vui lòng chọn Menu")
     print("1. Để gửi email")
     print("2. Để xem danh sách các email đã nhận")
-    print("3. Setting")
+    print("3. Cài đặt")
     print("4. Thoát")
 
     print("Bạn chọn: ", end="")
@@ -91,7 +91,6 @@ def print_received_email_list(email):
         input("Nhấn enter để trở lại menu!!")
         return
 
-    data = reading_email.read_manage_json(email)
     while True:
         print("Đây là danh sách các folder trong mailbox của bạn:")
         print("1. Inbox")
@@ -108,6 +107,7 @@ def print_received_email_list(email):
             return
 
         choice_Mailbox = get_the_box_name(choice_Mailbox)
+        data = reading_email.read_manage_json(email)
         box_data = reading_email.get_mail_in_box(data, choice_Mailbox)
 
         print_emails_in_box(box_data, email, choice_Mailbox)
@@ -167,13 +167,13 @@ def print_emails_in_box(box_data, email, choice_Mailbox):
             print("0. Kích hoạt tính năng chuyển mail sang thư mục khác")
             reading_email.print_mails_into_console(filter_data)
         print(nLetters + 1, "EXIT")
-
+        print("Chọn số: ", end="")
         choice_file_in_filter_data = get_choice_number(0, nLetters + 1)
 
         if choice_file_in_filter_data == nLetters + 1:
             break
 
-        if choice_file_in_filter_data == 0:
+        if choice_file_in_filter_data == 0: # move file
             moved_file = get_the_moved_file(filter_data, nLetters)
 
             if moved_file == None:
@@ -220,18 +220,8 @@ def print_emails_in_box(box_data, email, choice_Mailbox):
             )
             file_name = reading_email.get_file_name_in_folder(file_folder)
             file_directory = file_folder + file_name
-            print("direc:", file_directory)
-
-            system = platform.system()
-            try:
-                if system == "Windows":
-                    subprocess.call(["open", file_directory])  # MacOS
-                elif system == "Darwin":
-                    subprocess.call(["start", file_directory], shell=True)  # Windows
-                else:
-                    print("Hệ điều hành không xác định, không thể mở file đính kèm")
-            except Exception as e:
-                print(f"Lỗi: {e}")
+            print()
+            print("file path:", file_directory)
 
         input("Ấn Enter để tiếp tục...")
 
