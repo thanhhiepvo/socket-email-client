@@ -224,7 +224,7 @@ def choice_destinate_folder(the_mail):
     for item in sub_box:
         print(count, ".", item)
         count += 1
-    print("Choice the destination folder: ", end="")
+    print("Chọn thư mục để lưu: ", end="")
     choice_number = get_choice_number(1, 5)
     return sub_box[choice_number - 1]
 
@@ -242,7 +242,7 @@ def fill_mails(filter_data, filter_based, email, sub_box):
 
 def get_the_moved_file(filter_data, nLetters):
     reading_email.print_mails_into_console(filter_data)
-    print("Choose the file you want to move: ", end="")
+    print("Chọn file muốn di chuyển: ", end="")
     choice_number = get_choice_number(1, nLetters + 1)
 
     if choice_number == nLetters:
@@ -251,7 +251,7 @@ def get_the_moved_file(filter_data, nLetters):
 
 
 def fill_emails_based_content(data, email, sub_box):
-    anything = str(input("Enter the thing you want to fill the content: "))
+    anything = str(input("Nhập nội dung bạn muốn điền: "))
     anything = anything.upper()
     final_data = []
     for i in range(len(data)):
@@ -263,7 +263,7 @@ def fill_emails_based_content(data, email, sub_box):
 
 
 def fill_emails_based_subject(data):
-    anything = str(input("Enter the thing you want to fill the subject: "))
+    anything = str(input("Nhập tiêu đề bạn muốn điền: "))
     anything = anything.upper()
     final_data = []
     for item in data:
@@ -277,10 +277,10 @@ def fill_emails_based_sender_email(data):
     def get_the_email_will_be_filled(sender_email):
         for email in sender_email:
             print(email)
-        enter_email = str(input("Enter an email above: "))
+        enter_email = str(input("Chọn email: "))
         while enter_email not in sender_email:
-            print("This email you recent entered is not exist")
-            enter_email = str(input("Enter again: "))
+            print("Email bạn vừa nhập không tồn tại!!")
+            enter_email = str(input("Hãy nhập lại: "))
         return enter_email.strip()
 
     sender_email = set()
