@@ -49,7 +49,8 @@ def print_sending_email():
     while True:
         if line != ".":
             line = input()
-            content = content + line + "\n"
+            if line != ".":
+                content = content + line + "\n"
         else:
             break
 
