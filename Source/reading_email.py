@@ -131,7 +131,7 @@ def move_file(email, the_email, des_box):
         try:
             shutil.move(src_path, des_path)
         except Exception as e:
-            print(f"An error occurred: {e}")
+            print(f"Lỗi: {e}")
 
         # os.rmdir(src_path)
         os.rmdir(source_folder)

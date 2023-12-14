@@ -101,9 +101,9 @@ class EmailDownloader:
             return listDownloaded
 
         except socket.error as se:
-            logging.error(f"Socket Error: {se}")
+            logging.error(f"Lỗi Socket: {se}")
         except IOError as ioe:
-            logging.error(f"I/O Error: {ioe}")
+            logging.error(f"Lỗi nhập xuất: {ioe}")
         except Exception as e:
-            logging.error(f"Error: {e}")
+            logging.error(f"Lỗi: {e}")
              
