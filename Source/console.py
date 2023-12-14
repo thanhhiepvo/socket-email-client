@@ -299,7 +299,7 @@ def fill_emails_based_sender_email(data):
     def get_the_email_will_be_filled(sender_email):
         for email in sender_email:
             print(email)
-        enter_email = str(input("Chọn email: "))
+        enter_email = str(input("Chọn một email: "))
         while enter_email not in sender_email:
             print("Email bạn vừa nhập không tồn tại")
             enter_email = str(input("Enter again: "))
