@@ -31,6 +31,9 @@ def print_sending_email():
     )
 
     recievers_To = str(input("To: "))
+    while recievers_To == "":
+        print("Trường To là trường bắt buộc, không được để trống!!")
+        recievers_To = str(input("To: "))
     recievers_To = recievers_To.split(",")
     recievers_To = [email.strip() for email in recievers_To]
 
@@ -178,7 +181,7 @@ def print_emails_in_box(box_data, email, choice_Mailbox):
         if choice_file_in_filter_data == nLetters + 1:
             break
 
-        if choice_file_in_filter_data == 0: # move file
+        if choice_file_in_filter_data == 0:  # move file
             moved_file = get_the_moved_file(filter_data, nLetters)
 
             if moved_file == None:
@@ -297,7 +300,7 @@ def fill_emails_based_sender_email(data):
         enter_email = str(input("Chọn một email: "))
         while enter_email not in sender_email:
             print("Email bạn vừa nhập không tồn tại")
-            enter_email = str(input("Enter again: "))
+            enter_email = str(input("Nhập lại: "))
         return enter_email.strip()
 
     sender_email = set()

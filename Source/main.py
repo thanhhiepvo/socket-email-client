@@ -27,7 +27,6 @@ def print_menu(buffer_config):
             print("\nĐã gửi email thành công!!\n")
 
         elif choice == 2:
-            print(buffer_config["Email"])
             console.print_received_email_list(buffer_config["Email"])
 
         elif choice == 3:
@@ -40,7 +39,7 @@ def get_email_loop(buffer_config):
     if not exit_flag:
         buffer_config = setting.read_config()
         getting_email.call_getting_email(buffer_config)
-        #print(buffer_config["Email"])
+        # print(buffer_config["Email"])
         threading.Timer(
             buffer_config["Autoload"], get_email_loop, args=[buffer_config]
         ).start()
