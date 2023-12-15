@@ -105,6 +105,41 @@ class EmailReader:
         with open(file_manage, "w") as file:
             json.dump(json_data, file, indent=4)
 
+    def get_boundary(self, message):
+        # Tìm vị trí của chuỗi "boundary="
+        boundary_start = message.find("boundary=")
+
+        # Kiểm tra xem "boundary=" có tồn tại trong chuỗi không
+        if boundary_start == -1:
+            return None
+
+        # Tách phần sau "boundary=" để lấy giá trị boundary
+        boundary_start += len("boundary=")
+        boundary_end = message.find("\n", boundary_start)
+        
+        if boundary_end == -1:
+            boundary_end = len(message)
+        
+        boundary_value = message[boundary_start:boundary_end].strip()
+
+        # Xóa ký tự trống hoặc dấu nháy nếu có
+        boundary_value = boundary_value.strip('"')
+        boundary_value = boundary_value.strip('-')
+
+        return boundary_value
+    
+    def split_message_by_boundary(self, message, boundary):
+        # Tách message thành các phần dựa vào boundary
+        parts = message.split(boundary)
+
+        # Lọc các phần không cần thiết
+        parts = [part.strip() for part in parts if part.strip()]
+
+        if boundary == 'boundary':
+            return parts[2:-1]
+
+        return parts[1:-1]
+
     def read_email(self, email_number):
         try:
             mail_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -132,6 +167,58 @@ class EmailReader:
                 to_remove = data.split("\r\n")[0]
                 response_retr = response_retr.removeprefix(to_remove + "\r\n")
                 response_retr = response_retr.removesuffix("\r\n.\r\n")
+                boundary = self.get_boundary(response_retr)
+
+                #print('A')
+                if boundary == None: # khong co file
+                    (
+                        sender_name,
+                        sender_email,
+                        subject,
+                        mail_content,
+                    ) = self.extract_email_info(response_retr)
+                    #print('B1')
+                    #print(sender_name, sender_email, subject, mail_content)
+                    self.load_email_to_managing(subject, sender_email, sender_name)
+                else: # co file
+                    parts = self.split_message_by_boundary(response_retr, boundary)
+                    #print('B2')
+                    (
+                        sender_name,
+                        sender_email,
+                        subject,
+                    ) = self.extract_email_info_when_has_attachment(parts[0])
+                    #print(parts[0])
+                    #print('C')
+                    #print(parts[1])
+                    mail_content = self.get_text_content(parts[1])
+                    #print('End C')
+                    #print(mail_content)
+                    self.load_email_to_managing(subject, sender_email, sender_name, True)
+                    #print('D')
+                    #with open("test.txt", "w") as file:
+                    #    file.write(parts[2])
+
+                    #print(subject)
+
+                    for part in parts[2:]:
+                        self.save_attachment(part, subject)
+                    #print('E')
+
+                """
+                print('A')
+                
+                print('B')
+                print()
+                #print(boundary)
+                #print(response_retr)
+                print(len(parts))
+                print('Phan 1')
+                print(parts[0])
+                print()
+                print('Phan 2')
+                print(parts[1])
+                #print(parts[2])
 
                 if "Content-Disposition: attachment" in response_retr: # có file
                     file_start = response_retr.rfind("Content-Type:")
@@ -156,6 +243,7 @@ class EmailReader:
                     ) = self.extract_email_info(response_retr)
                     #print(sender_name, sender_email, subject, mail_content)
                     self.load_email_to_managing(subject, sender_email, sender_name)
+                """
 
                 self.save_mail_content(subject, mail_content)
 
@@ -166,7 +254,42 @@ class EmailReader:
         finally:
             mail_socket.close()
 
-    def save_attachment(self, attachment, email_number, subject):
+    def get_text_content(self, message):
+        # Tìm vị trí của "Content-Type" trong chuỗi
+        content_type_start = message.find("Content-Type:")
+        
+        # Kiểm tra xem "Content-Type" có tồn tại trong chuỗi không
+        if content_type_start == -1:
+            return None
+
+        # Tìm vị trí của "\n" sau "Content-Type"
+        content_type_end = message.find("\n", content_type_start)
+
+        # Lấy giá trị "Content-Type"
+        content_type_value = message[content_type_start:content_type_end].strip()
+        #print("content type value:", content_type_value)
+
+        # Kiểm tra xem có phải là văn bản không
+        if "text/plain" not in content_type_value:
+            return None
+
+        # Tìm vị trí của "\n\n" để xác định nơi bắt đầu nội dung văn bản
+        #print(content_type_end)
+        content_start = message.find("\r\n", content_type_end)
+        #print(content_start)
+        #print(message[content_start])
+
+        # Kiểm tra xem "\n\n" có tồn tại trong chuỗi không
+        if content_start == -1:
+            return None
+
+        # Lấy nội dung văn bản
+        text_content = message[content_start + 2:].strip()
+        #print("text content: ", text_content)
+
+        return text_content
+
+    def save_attachment(self, attachment, subject):
         def getFileName(attachment_header):
             index = attachment_header.find("name=") + 6
             file_name = attachment_header[index:]
@@ -175,18 +298,13 @@ class EmailReader:
 
             return file_name
 
-        def getEncoding(attachmen_header):
-            index = attachmen_header.find("Content-Transfer-Encoding: ") + len(
-                "Content-Transfer-Encoding: "
-            )
-            encoding = attachmen_header[index:]
-            return encoding
-
         attachment_end = attachment.find("\r\n\r\n")
-        attachment_header = attachment[:attachment_end]
+        #attachment_header = attachment[:attachment_end]
 
-        file_name = getFileName(attachment_header)
-        encoding = getEncoding(attachment_header)
+        file_name = getFileName(attachment)
+        #print(attachment_end)
+
+        #print(file_name)
 
         attachment_data = attachment[attachment_end:]
         attachment_data = attachment_data.replace("\r\n", "")
@@ -234,14 +352,16 @@ class EmailReader:
         subject = sender_name[sender_name.find("Subject: ") + len("Subject: ") :]
         subject = subject[: subject.find("\n")].strip()  # final
 
+        """
         main_content = sender_name[sender_name.find("Content-Transfer-Encoding:") :]
         main_content = main_content[main_content.find("\n") :]
         main_content = main_content[: main_content.find("-") - 1].strip()
         main_content = main_content.replace("\n", "")  # final
+        """
 
         sender_name = sender_name[: sender_name.find(" <")].strip()  # final
 
-        return sender_name, sender_email, subject, main_content
+        return sender_name, sender_email, subject
 
     def mark_email_as_read(self, email_number):
         self.read_emails.add(email_number)

@@ -110,6 +110,11 @@ def print_received_email_list(email):
         data = reading_email.read_manage_json(email)
         box_data = reading_email.get_mail_in_box(data, choice_Mailbox)
 
+        if not box_data: # hop thu rong
+            print("Không có email nào")
+            input("Ấn Enter để tiếp tục...")
+            continue
+
         print_emails_in_box(box_data, email, choice_Mailbox)
 
 
