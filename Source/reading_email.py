@@ -88,9 +88,10 @@ def mark_file_was_read_on_disk(email, mail_card):
 def get_file_name_in_folder(folder_path):
     files = glob.glob(os.path.join(folder_path, "*"))
     files = [f for f in files if os.path.isfile(f)]
-    file = files[0]
-    file = file[file.rfind("\\") + 1 :]
-    return file
+    res_files = []
+    for file in files:
+        res_files.append(file[file.rfind("\\") + 1 :])
+    return res_files
 
 
 def move_file(email, the_email, des_box):
@@ -123,15 +124,15 @@ def move_file(email, the_email, des_box):
         if not os.path.exists(des_box):
             os.makedirs(des_folder)
 
-        file_name = get_file_name_in_folder(source_folder)
+        file_names = get_file_name_in_folder(source_folder)
 
-        src_path = os.path.join(source_folder, file_name)
-        des_path = os.path.join(des_folder, file_name)
-
-        try:
-            shutil.move(src_path, des_path)
-        except Exception as e:
-            print(f"Lỗi: {e}")
+        for file_name in file_names:
+            src_path = os.path.join(source_folder, file_name)
+            des_path = os.path.join(des_folder, file_name)
+            try:
+                shutil.move(src_path, des_path)
+            except Exception as e:
+                print(f"Lỗi: {e}")
 
         # os.rmdir(src_path)
         os.rmdir(source_folder)

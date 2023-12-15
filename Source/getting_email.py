@@ -74,11 +74,11 @@ class EmailReader:
         self, subject, sender_email, sender_name, attachment=False
     ):
         folder_box = "./Mailbox/" + self.client_config.email
-        file_manage =  folder_box + "/manage.json"
+        file_manage = folder_box + "/manage.json"
 
         if not os.path.exists(folder_box):
             os.makedirs(folder_box)
-        
+
         data = []
         if os.path.exists(file_manage):
             f = open(file_manage)
@@ -86,7 +86,7 @@ class EmailReader:
             f.close()
             data = data["emails"]
         else:
-            with open(file_manage, 'w') as file:
+            with open(file_manage, "w") as file:
                 file.write("")
 
         new_mail = {
@@ -101,7 +101,7 @@ class EmailReader:
         data.append(new_mail)
         json_data = {"emails": data}
 
-        #print("A")
+        # print("A")
         with open(file_manage, "w") as file:
             json.dump(json_data, file, indent=4)
 
@@ -116,18 +116,18 @@ class EmailReader:
         # Tách phần sau "boundary=" để lấy giá trị boundary
         boundary_start += len("boundary=")
         boundary_end = message.find("\n", boundary_start)
-        
+
         if boundary_end == -1:
             boundary_end = len(message)
-        
+
         boundary_value = message[boundary_start:boundary_end].strip()
 
         # Xóa ký tự trống hoặc dấu nháy nếu có
         boundary_value = boundary_value.strip('"')
-        boundary_value = boundary_value.strip('-')
+        boundary_value = boundary_value.strip("-")
 
         return boundary_value
-    
+
     def split_message_by_boundary(self, message, boundary):
         # Tách message thành các phần dựa vào boundary
         parts = message.split(boundary)
@@ -135,10 +135,10 @@ class EmailReader:
         # Lọc các phần không cần thiết
         parts = [part.strip() for part in parts if part.strip()]
 
-        if boundary == 'boundary':
-            return parts[2:-1]
+        if boundary == "boundary":
+            return parts[2 : len(parts) - 1]
 
-        return parts[1:-1]
+        return parts[1 : len(parts) - 1]
 
     def read_email(self, email_number):
         try:
@@ -177,7 +177,7 @@ class EmailReader:
                         mail_content,
                     ) = self.extract_email_info(response_retr)
                     self.load_email_to_managing(subject, sender_email, sender_name)
-                else: # co file
+                else:  # co file
                     parts = self.split_message_by_boundary(response_retr, boundary)
                     (
                         sender_name,
@@ -185,7 +185,9 @@ class EmailReader:
                         subject,
                     ) = self.extract_email_info_when_has_attachment(parts[0])
                     mail_content = self.get_text_content(parts[1])
-                    self.load_email_to_managing(subject, sender_email, sender_name, True)
+                    self.load_email_to_managing(
+                        subject, sender_email, sender_name, True
+                    )
 
                     for part in parts[2:]:
                         self.save_attachment(part, subject)
@@ -203,7 +205,7 @@ class EmailReader:
     def get_text_content(self, message):
         # Tìm vị trí của "Content-Type" trong chuỗi
         content_type_start = message.find("Content-Type:")
-        
+
         # Kiểm tra xem "Content-Type" có tồn tại trong chuỗi không
         if content_type_start == -1:
             return None
@@ -331,9 +333,7 @@ def call_getting_email(buffer_config):
 
     # Example usage of EmailDownloader
     downloader = EmailDownloader(email_config)
-    listDownloaded = downloader.download_emails() 
-
-    #print(listDownloaded)
+    listDownloaded = downloader.download_emails()
 
     # Example usage of EmailReader
     reader = EmailReader(email_config)

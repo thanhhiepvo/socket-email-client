@@ -113,7 +113,7 @@ def print_received_email_list(email):
         data = reading_email.read_manage_json(email)
         box_data = reading_email.get_mail_in_box(data, choice_Mailbox)
 
-        if not box_data: # hop thu rong
+        if not box_data:  # hop thu rong
             print("Không có email nào")
             input("Ấn Enter để tiếp tục...")
             continue
@@ -262,10 +262,11 @@ def fill_mails(filter_data, filter_based, email, sub_box):
 
 def get_the_moved_file(filter_data, nLetters):
     reading_email.print_mails_into_console(filter_data)
+    print(f"{nLetters + 1}. Thoát")
     print("Chọn file bạn muốn di chuyển: ", end="")
     choice_number = get_choice_number(1, nLetters + 1)
 
-    if choice_number == nLetters:
+    if choice_number == nLetters + 1:
         return None
     return choice_number
 
