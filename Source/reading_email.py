@@ -39,18 +39,18 @@ def print_mails_into_console(data):
             print(
                 "(chưa đọc)",
                 count,
-                ". Sender:",
+                ". Người gửi:",
                 item["sender_name"],
-                ", Subject:",
+                ", Tiêu đề:",
                 item["subject"],
             )
         else:
             print(
                 "         ",
                 count,
-                ". Sender:",
+                ". Người gửi:",
                 item["sender_name"],
-                ", Subject:",
+                ", Tiêu đề:",
                 item["subject"],
             )
         count += 1
@@ -109,13 +109,13 @@ def move_file(email, the_email, des_box):
     src_path = os.path.join(source_folder, file_name)
     des_path = os.path.join(des_folder, file_name)
 
-    print("src path:", src_path)
-    print("des path:", des_path)
+    print("Đường dẫn nguồn:", src_path)
+    print("Đường dẫn đích:", des_path)
 
     try:
         shutil.move(src_path, des_path)
     except Exception as e:
-        print(f"An error occurred: {e}")
+        print(f"Lỗi: {e}")
 
     if the_email["attachment"] == True:
         source_folder += the_email["subject"] + "/"
