@@ -15,7 +15,7 @@ def print_client_console():
     print("Vui lòng chọn Menu")
     print("1. Để gửi email")
     print("2. Để xem danh sách các email đã nhận")
-    print("3. Setting")
+    print("3. Cài đặt")
     print("4. Thoát")
 
     print("Bạn chọn: ", end="")
@@ -42,7 +42,7 @@ def print_sending_email():
     recievers_BCC = recievers_BCC.split(",")
     recievers_BCC = [email.strip() for email in recievers_BCC]
 
-    subject = str(input("Subject: "))
+    subject = str(input("Tiêu đề: "))
     print('Content (Khi muốn kết thúc việc nhập content hãy viết một dòng chỉ có "."):')
     content = ""
     line = ""
@@ -88,7 +88,7 @@ def print_received_email_list(email):
         print("3. Important")
         print("4. Work")
         print("5. Spam")
-        print("6. EXIT")
+        print("6. Thoát")
 
         print("Bạn muốn xem mail trong folder nào: ", end="")
         choice_Mailbox = get_choice_number(1, 6)
@@ -155,7 +155,7 @@ def print_emails_in_box(box_data, email, choice_Mailbox):
         else:
             print("0. Kích hoạt tính năng chuyển mail sang thư mục khác")
             reading_email.print_mails_into_console(filter_data)
-        print(nLetters + 1, "EXIT")
+        print(nLetters + 1, "Thoát")
 
         choice_file_in_filter_data = get_choice_number(0, nLetters + 1)
 
@@ -211,7 +211,7 @@ def print_emails_in_box(box_data, email, choice_Mailbox):
             except Exception as e:
                 print(f"Lỗi: {e}")
 
-        input("Press Enter to continue...")
+        input("Nhấn Enter để tiếp tục...")
 
 
 def choice_destinate_folder(the_mail):
