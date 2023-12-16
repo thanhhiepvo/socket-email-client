@@ -8,15 +8,15 @@ def create_or_check_config_file(file_path="config.json"):
         return
 
     default_data = {
-        "General": [
+        "Cài đặt chung": [
             {
-                "Username": "Test Name",
+                "Tên người dùng": "Test Name",
                 "Email": "test@email.com",
-                "Password": "ahihi",
+                "Mật khẩu": "ahihi",
                 "MailServer": "127.0.0.1",
                 "SMTP": 2225,
                 "POP3": 3335,
-                "Autoload": 5,
+                "Thời gian tự động tải": 5,
             }
         ]
     }
@@ -34,12 +34,12 @@ def read_config():
 
 
 def count_down_update_time(seconds):
-    print(f"Đợi {seconds} giây để chương trình cập nhật các thay đổi!!")
+    print(f"Vui lòng đợi {seconds} giây để chương trình cập nhật!!")
     while seconds > 0:
-        print(f"Còn {seconds} giây...")
+        print(f"{seconds}...")
         time.sleep(1)  # Tạm dừng 1 giây
         seconds -= 1
-    print("Đã cập nhật xong!!")
+    print("Cập nhật hoàn tất!!")
 
 
 def setting():
@@ -54,28 +54,28 @@ def setting():
 
     while True:
         print("Thông tin và Cài đặt")
-        print("1. Username:", data["Username"])
+        print("1. Người dùng:", data["Username"])
         print("2. Email:", data["Email"])
-        print("3. Password:", data["Password"])
+        print("3. Mật khẩu:", data["Password"])
         print("4. MailServer:", data["MailServer"])
         print("5. SMTP:", data["SMTP"])
         print("6. POP3:", data["POP3"])
-        print("7. Autoload:", data["Autoload"])
+        print("7. Thời gian tự động tải:", data["Autoload"])
         print("8. Thoát")
 
         old_autoload_time = data["Autoload"]
         choice = int(input("Chọn mục để sửa (nhập số): "))
         while choice not in range(1, 9):
-            choice = int(input("Nhập lại: "))
+            choice = int(input("Số không hợp lệ! Hãy nhập lại: "))
 
         if choice == 1:
-            data["Username"] = str(input("Nhập username: "))
+            data["Username"] = str(input("Nhập tên người dùng: "))
             is_change = True
         elif choice == 2:
             data["Email"] = str(input("Nhập email: "))
             is_change = True
         elif choice == 3:
-            data["Password"] = str(input("Nhập password: "))
+            data["Password"] = str(input("Nhập mật khẩu: "))
             is_change = True
         elif choice == 4:
             data["MailServer"] = str(input("Nhập MailServer host: "))
@@ -87,13 +87,13 @@ def setting():
             data["POP3"] = int(input("Nhập POP3: "))
             is_change = True
         elif choice == 7:
-            data["Autoload"] = int(input("Nhập Autoload: "))
+            data["Autoload"] = int(input("Nhập thời gian tải tự động: "))
             is_change = True
         else:
             break
 
     if is_change:
-        json_data = {"General": [data]}
+        json_data = {"Cài đặt chung": [data]}
         with open(file_json, "w") as file:
             json.dump(json_data, file, indent=4)
         count_down_update_time(old_autoload_time + 5)
