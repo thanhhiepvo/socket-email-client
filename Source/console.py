@@ -1,6 +1,4 @@
 import reading_email
-import subprocess
-import platform
 import os
 
 
