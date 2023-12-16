@@ -30,7 +30,7 @@ def read_config():
     data = json.load(f)
     f.close()
 
-    return data["General"][0]
+    return data["Cài đặt chung"][0]
 
 
 def count_down_update_time(seconds):
