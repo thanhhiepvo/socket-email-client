@@ -43,7 +43,7 @@ def print_sending_email():
     recievers_BCC = [email.strip() for email in recievers_BCC]
 
     subject = str(input("Tiêu đề: "))
-    print('Content (Khi muốn kết thúc việc nhập content hãy viết một dòng chỉ có "."):')
+    print('Nội dung (Khi muốn kết thúc việc nhập content hãy viết một dòng chỉ có "."):')
     content = ""
     line = ""
     while True:
@@ -115,9 +115,9 @@ def print_emails_in_box(box_data, email, choice_Mailbox):
             if not filter_based["sender_email"]:
                 print("1. Lọc email dựa trên địa chỉ người gửi")
             if not filter_based["subject"]:
-                print("2. Lọc email dựa trên subject")
+                print("2. Lọc email dựa vào tiêu đề")
             if not filter_based["content"]:
-                print("3. Lọc dựa trên content")
+                print("3. Lọc dựa vào nội dung")
             print("4. Chọn lại")
             print("5. Không")
             print("Chọn số: ", end="")
@@ -180,7 +180,7 @@ def print_emails_in_box(box_data, email, choice_Mailbox):
         choice_file_in_filter_data -= 1  # because index in list count from 0
 
         print()
-        print("The content in this mail:")
+        print("Nội dung của email: ")
         email_card = filter_data[choice_file_in_filter_data]
         choice_file_in_box_data = find_mail_index_in_box_data(email_card, box_data)
         print(
@@ -198,7 +198,7 @@ def print_emails_in_box(box_data, email, choice_Mailbox):
             file_folder = os.getcwd() + "\Mailbox\\" + email + "\\" + email_card['box'] + "\\" + email_card['subject'] + '\\'
             file_name = reading_email.get_file_name_in_folder(file_folder)
             file_directory = file_folder + file_name
-            print("direc:", file_directory)
+            print("Danh mục:", file_directory)
 
             system = platform.system()
             try:
@@ -251,7 +251,7 @@ def get_the_moved_file(filter_data, nLetters):
 
 
 def fill_emails_based_content(data, email, sub_box):
-    anything = str(input("Nhập nội dung bạn muốn điền: "))
+    anything = str(input("Nhập nội dung để lọc (nội dung email): "))
     anything = anything.upper()
     final_data = []
     for i in range(len(data)):
@@ -263,7 +263,7 @@ def fill_emails_based_content(data, email, sub_box):
 
 
 def fill_emails_based_subject(data):
-    anything = str(input("Nhập tiêu đề bạn muốn điền: "))
+    anything = str(input("Nhập nội dung để lọc (tiêu đề của email): "))
     anything = anything.upper()
     final_data = []
     for item in data:
