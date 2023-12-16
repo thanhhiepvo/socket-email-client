@@ -8,15 +8,15 @@ def create_or_check_config_file(file_path="config.json"):
         return
 
     default_data = {
-        "Cài đặt chung": [
+        "General": [
             {
-                "Tên người dùng": "Test Name",
+                "Username": "Test Name",
                 "Email": "test@email.com",
-                "Mật khẩu": "ahihi",
+                "Password": "ahihi",
                 "MailServer": "127.0.0.1",
                 "SMTP": 2225,
                 "POP3": 3335,
-                "Thời gian tự động tải": 5,
+                "Autoload": 5,
             }
         ]
     }
@@ -30,7 +30,7 @@ def read_config():
     data = json.load(f)
     f.close()
 
-    return data["Cài đặt chung"][0]
+    return data["General"][0]
 
 
 def count_down_update_time(seconds):
@@ -93,7 +93,7 @@ def setting():
             break
 
     if is_change:
-        json_data = {"Cài đặt chung": [data]}
+        json_data = {"General": [data]}
         with open(file_json, "w") as file:
             json.dump(json_data, file, indent=4)
         count_down_update_time(old_autoload_time + 5)
