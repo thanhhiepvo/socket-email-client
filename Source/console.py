@@ -30,7 +30,7 @@ def print_sending_email():
 
     recievers_To = str(input("To: "))
     while recievers_To == "":
-        print("Trường To là trường bắt buộc, không được để trống!!")
+        print("Trường 'To' là trường bắt buộc, không được để trống!!")
         recievers_To = str(input("To: "))
     recievers_To = recievers_To.split(",")
     recievers_To = [email.strip() for email in recievers_To]
@@ -43,8 +43,8 @@ def print_sending_email():
     recievers_BCC = recievers_BCC.split(",")
     recievers_BCC = [email.strip() for email in recievers_BCC]
 
-    subject = str(input("Subject: "))
-    print('Content (Khi muốn kết thúc việc nhập content hãy viết một dòng chỉ có "."):')
+    subject = str(input("Tiêu đề: "))
+    print('Nội dung (Khi muốn kết thúc việc nhập nội dung. Hãy viết một dòng chỉ có dấu chấm "."):')
     content = ""
     line = ""
     while True:
@@ -89,7 +89,7 @@ def print_received_email_list(email):
 
     if not check_email_existence(email):
         print("Email trong setting không tồn tại trong Mailbox của server!!")
-        input("Nhấn enter để trở lại menu!!")
+        input("Nhấn Enter để trở lại Menu!!")
         return
 
     while True:
@@ -99,7 +99,7 @@ def print_received_email_list(email):
         print("3. Important")
         print("4. Work")
         print("5. Spam")
-        print("6. EXIT")
+        print("6. Thoát")
 
         print("Bạn muốn xem mail trong folder nào: ", end="")
         choice_Mailbox = get_choice_number(1, 6)
@@ -132,12 +132,12 @@ def print_emails_in_box(box_data, email, choice_Mailbox):
             if not filter_based["sender_email"]:
                 print("1. Lọc email dựa trên địa chỉ người gửi")
             if not filter_based["subject"]:
-                print("2. Lọc email dựa trên subject")
+                print("2. Lọc email dựa trên tiêu đề email")
             if not filter_based["content"]:
-                print("3. Lọc dựa trên content")
+                print("3. Lọc dựa trên nội dung")
             print("4. Chọn lại")
             print("5. Không")
-            print("Chọn số: ", end="")
+            print("Lựa chọn của bạn (nhập số): ", end="")
             choice_number = get_choice_number(1, 5)
 
             if choice_number == 5:
@@ -172,7 +172,7 @@ def print_emails_in_box(box_data, email, choice_Mailbox):
         else:
             print("0. Kích hoạt tính năng chuyển mail sang thư mục khác")
             reading_email.print_mails_into_console(filter_data)
-        print(nLetters + 1, "EXIT")
+        print(nLetters + 1, "Thoát")
         print("Chọn số: ", end="")
         choice_file_in_filter_data = get_choice_number(0, nLetters + 1)
 
