@@ -224,10 +224,11 @@ def print_emails_in_box(box_data, email, choice_Mailbox):
                 + email_card["subject"]
                 + "\\"
             )
-            file_name = reading_email.get_file_name_in_folder(file_folder)
-            file_directory = file_folder + file_name
+            file_names = reading_email.get_file_name_in_folder(file_folder)
             print()
-            print("file path:", file_directory)
+            for file_name in file_names:
+                file_directory = file_folder + file_name
+                print("file path:", file_directory)
 
         input("Ấn Enter để tiếp tục...")
 
